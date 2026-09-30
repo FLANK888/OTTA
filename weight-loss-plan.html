@@ -75,6 +75,8 @@ svg text{fill:var(--muted);font-size:11px}
 .btn.danger{color:var(--obese)}
 .btn.x{padding:2px 8px;font-size:.8rem}
 .bmiout{font-size:.95rem}
+.savestatus{margin-left:auto;font-size:.8rem;font-weight:500;color:var(--muted)}
+.savestatus.bad{color:var(--warn)}
 .up{color:var(--obese)} .down{color:var(--normal)}
 .ok{color:var(--normal);font-weight:600} .lack{color:var(--warn)}
 @media print{.card{break-inside:avoid} .tabs{display:none}}
@@ -86,7 +88,7 @@ svg text{fill:var(--muted);font-size:11px}
   <p class="sub">輸入你的基本資料，下方的 BMI、熱量目標、飲食與運動計劃會即時更新。</p>
 
   <section class="card">
-    <h2><span class="n">1</span>基本資料</h2>
+    <h2><span class="n">1</span>基本資料 <span id="saveStatus" class="savestatus"></span></h2>
     <div class="form" id="profile">
       <div><label for="sex">性別</label><select id="sex"><option value="m">男</option><option value="f">女</option></select></div>
       <div><label for="age">年齡</label><input id="age" type="number" value="30" min="15" max="90"></div>
@@ -489,6 +491,7 @@ $('logForm').addEventListener('submit', e => {
   else logs.push(entry);
   saveLogs();
   $('weight').value = logs.slice().sort((a, b) => a.date.localeCompare(b.date)).at(-1).weight;
+  saveProfile();
   $('lWeight').value = $('lWaist').value = $('lSteps').value = $('lNote').value = '';
   $('lCardio').value = $('lStrength').value = 0;
   $('bmiOut').textContent = '';
@@ -554,14 +557,33 @@ try {
   const p = JSON.parse(localStorage.getItem(PROFILE_KEY));
   if (p) ['sex','age','height','weight','goal','act','pace'].forEach(k => { if (p[k] != null) $(k).value = p[k]; });
 } catch (e) {}
+function storageWorks(){
+  try { localStorage.setItem('wlp-test', '1'); localStorage.removeItem('wlp-test'); return true; } catch (e) { return false; }
+}
+function showSaved(ok){
+  const el = $('saveStatus');
+  if (ok) {
+    const t = new Date();
+    el.className = 'savestatus';
+    el.textContent = '✓ 已自動儲存 ' + t.toLocaleTimeString('zh-TW', {hour: '2-digit', minute: '2-digit', second: '2-digit'});
+  } else {
+    el.className = 'savestatus bad';
+    el.textContent = '⚠ 目前開啟的環境無法儲存資料，請用 Chrome / Safari / Edge 直接開啟此檔案';
+  }
+}
 function saveProfile(){
   try {
     const p = {}; ['sex','age','height','weight','goal','act','pace'].forEach(k => p[k] = $(k).value);
     localStorage.setItem(PROFILE_KEY, JSON.stringify(p));
-  } catch (e) {}
+    showSaved(localStorage.getItem(PROFILE_KEY) === JSON.stringify(p));
+  } catch (e) { showSaved(false); }
 }
+if (!storageWorks()) showSaved(false);
 
-document.querySelectorAll('#profile input, #profile select').forEach(el => el.addEventListener('input', () => { saveProfile(); render(); }));
+document.querySelectorAll('#profile input, #profile select').forEach(el => {
+  el.addEventListener('input', () => { saveProfile(); render(); });
+  el.addEventListener('change', saveProfile);
+});
 $('dayTabs').addEventListener('click', e => {
   const b = e.target.closest('button'); if (!b) return;
   day = +b.dataset.d; render();
