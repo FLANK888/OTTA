@@ -173,7 +173,7 @@ svg text{fill:var(--muted);font-size:11px}
 
   <section class="card">
     <h2><span class="n">6</span>每週體重與運動記錄</h2>
-    <p class="sub" style="margin:-6px 0 16px">每週記錄一次，自動算出 BMI、週變化與目標進度。資料只存在這台裝置的瀏覽器裡，可匯出 CSV 備份。</p>
+    <p class="sub" style="margin:-6px 0 16px">每週記錄一次，自動算出 BMI、週變化與目標進度。以網址開啟並登入時會同步到你的個人雲端空間（只有你看得到）；直接開啟檔案時存在這台裝置的瀏覽器裡。可隨時匯出 CSV 備份。</p>
     <form class="form" id="logForm">
       <div><label for="lDate">日期</label><input id="lDate" type="date" required></div>
       <div><label for="lWeight">體重 (kg)</label><input id="lWeight" type="number" step="0.1" min="30" max="250" required></div>
@@ -398,7 +398,10 @@ function render(){
 const LOG_KEY = 'wlp-log-v1', PROFILE_KEY = 'wlp-profile-v1';
 let logs = [];
 try { logs = JSON.parse(localStorage.getItem(LOG_KEY)) || []; } catch (e) { logs = []; }
-const saveLogs = () => { try { localStorage.setItem(LOG_KEY, JSON.stringify(logs)); } catch (e) {} };
+const saveLogs = () => {
+  try { localStorage.setItem(LOG_KEY, JSON.stringify(logs)); } catch (e) {}
+  cloudPush('logs', () => ({ entries: logs }));
+};
 const esc = t => String(t ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const today = () => { const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 10); };
 const heightM = () => +$('height').value / 100;
@@ -524,13 +527,16 @@ $('sampleLog').addEventListener('click', () => {
   });
   saveLogs(); renderLog();
 });
-$('exportCsv').addEventListener('click', () => {
+$('exportCsv').addEventListener('click', async () => {
   const head = 'date,weight,bmi,waist,cardio_min,strength_times,steps,note';
   const lines = logs.map(l => [l.date, l.weight, r1(calcBmi(l.weight)), l.waist ?? '', l.cardio, l.strength, l.steps ?? '',
     '"' + String(l.note || '').replace(/"/g, '""') + '"'].join(','));
-  const blob = new Blob(['﻿' + [head, ...lines].join('\n')], {type: 'text/csv;charset=utf-8'});
+  const blob = new Blob(['\ufeff' + [head, ...lines].join('\n')], {type: 'text/csv;charset=utf-8'});
+  const filename = '減重記錄-' + today() + '.csv';
+  const dl = window.claude && typeof window.claude.use === 'function' ? await claude.use('downloads') : null;
+  if (dl) { try { await dl.save({ filename, data: blob }); } catch (e) {} return; }
   const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob); a.download = '減重記錄-' + today() + '.csv'; a.click();
+  a.href = URL.createObjectURL(blob); a.download = filename; a.click();
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 });
 $('importCsv').addEventListener('change', async e => {
@@ -552,33 +558,74 @@ $('importCsv').addEventListener('change', async e => {
   e.target.value = '';
 });
 
-// 記住基本資料
-try {
-  const p = JSON.parse(localStorage.getItem(PROFILE_KEY));
-  if (p) ['sex','age','height','weight','goal','act','pace'].forEach(k => { if (p[k] != null) $(k).value = p[k]; });
-} catch (e) {}
-function storageWorks(){
+// 記住基本資料：瀏覽器儲存 + 雲端同步（發佈為網頁時）
+const PROFILE_FIELDS = ['sex','age','height','weight','goal','act','pace'];
+const profileData = () => { const p = {}; PROFILE_FIELDS.forEach(k => p[k] = $(k).value); return p; };
+const applyProfile = p => PROFILE_FIELDS.forEach(k => { if (p && p[k] != null && p[k] !== '') $(k).value = p[k]; });
+try { applyProfile(JSON.parse(localStorage.getItem(PROFILE_KEY))); } catch (e) {}
+
+let cloud = null;
+const pushTimers = {};
+const hms = () => new Date().toLocaleTimeString('zh-TW', {hour: '2-digit', minute: '2-digit', second: '2-digit'});
+function setStatus(text, bad){
+  const el = $('saveStatus');
+  el.className = 'savestatus' + (bad ? ' bad' : '');
+  el.textContent = text;
+}
+function localWorks(){
   try { localStorage.setItem('wlp-test', '1'); localStorage.removeItem('wlp-test'); return true; } catch (e) { return false; }
 }
-function showSaved(ok){
-  const el = $('saveStatus');
-  if (ok) {
-    const t = new Date();
-    el.className = 'savestatus';
-    el.textContent = '✓ 已自動儲存 ' + t.toLocaleTimeString('zh-TW', {hour: '2-digit', minute: '2-digit', second: '2-digit'});
-  } else {
-    el.className = 'savestatus bad';
-    el.textContent = '⚠ 目前開啟的環境無法儲存資料，請用 Chrome / Safari / Edge 直接開啟此檔案';
-  }
+function cloudPush(key, dataFn){
+  if (!cloud) return;
+  clearTimeout(pushTimers[key]);
+  setStatus('同步中…');
+  pushTimers[key] = setTimeout(async () => {
+    try { await cloud[key].set(dataFn()); setStatus('✓ 已同步到雲端 ' + hms()); }
+    catch (e) {
+      if (e && e.code === 'unavailable') {
+        setTimeout(() => cloud[key].set(dataFn()).then(() => setStatus('✓ 已同步到雲端 ' + hms()), () => setStatus('⚠ 雲端同步失敗，資料暫存在本機', true)), 1500 + Math.random() * 1500);
+      } else setStatus('⚠ 雲端同步失敗，資料暫存在本機', true);
+    }
+  }, 800);
 }
 function saveProfile(){
-  try {
-    const p = {}; ['sex','age','height','weight','goal','act','pace'].forEach(k => p[k] = $(k).value);
-    localStorage.setItem(PROFILE_KEY, JSON.stringify(p));
-    showSaved(localStorage.getItem(PROFILE_KEY) === JSON.stringify(p));
-  } catch (e) { showSaved(false); }
+  const p = profileData();
+  let ok = false;
+  try { localStorage.setItem(PROFILE_KEY, JSON.stringify(p)); ok = localStorage.getItem(PROFILE_KEY) === JSON.stringify(p); } catch (e) {}
+  if (cloud) cloudPush('profile', () => profileData());
+  else if (ok) setStatus('✓ 已儲存在本機 ' + hms());
+  else setStatus('⚠ 目前開啟的環境無法儲存資料，請用 Chrome / Safari / Edge 直接開啟', true);
 }
-if (!storageWorks()) showSaved(false);
+if (!localWorks()) setStatus('⚠ 目前開啟的環境無法儲存資料，請用 Chrome / Safari / Edge 直接開啟', true);
+
+// 發佈成網頁後：登入者的資料存到個人雲端空間，跨裝置同步
+(async () => {
+  if (!window.claude || typeof window.claude.use !== 'function') return;
+  try {
+    const [db, user] = await Promise.all([claude.use('db'), claude.use('user')]);
+    if (!db || !user) return;
+    const uid = await user.id();
+    if (!uid) return;
+    const col = db.collection('data/users/' + uid);
+    const refs = { profile: col.doc('profile'), logs: col.doc('logs') };
+    const [ps, ls] = await Promise.all([refs.profile.get(), refs.logs.get()]);
+    cloud = refs;
+    if (ps.exists) {
+      applyProfile(ps.data());
+      try { localStorage.setItem(PROFILE_KEY, JSON.stringify(profileData())); } catch (e) {}
+    } else cloudPush('profile', () => profileData());
+    const entries = ls.exists && Array.isArray(ls.data().entries) ? ls.data().entries : null;
+    if (entries) {
+      logs = entries.map(l => ({ ...l }));
+      try { localStorage.setItem(LOG_KEY, JSON.stringify(logs)); } catch (e) {}
+    } else if (logs.length) cloudPush('logs', () => ({ entries: logs }));
+    render();
+    if (ps.exists || entries) setStatus('✓ 已從雲端載入 ' + hms());
+    else setStatus('✓ 雲端同步已啟用');
+  } catch (e) {
+    setStatus('⚠ 無法連線雲端，資料暫存在本機', true);
+  }
+})();
 
 document.querySelectorAll('#profile input, #profile select').forEach(el => {
   el.addEventListener('input', () => { saveProfile(); render(); });
