@@ -1,4 +1,4 @@
-name: 每週更新總經風險儀表板
+name: 每週更新總經風險儀表板並發布網站
 
 on:
   schedule:
@@ -6,9 +6,11 @@ on:
     - cron: "17 1 * * 6"
   workflow_dispatch:
   push:
-    branches: [main, master]
+    branches: [add-weight-loss-plan, main, master]
     paths:
       - "macro/**"
+      - "index.html"
+      - "weight-loss-plan.html"
       - ".github/workflows/update-macro.yml"
 
 permissions:
@@ -56,9 +58,15 @@ jobs:
           ref: ${{ github.ref }}
       - name: 取得最新提交（含剛更新的數據）
         run: git pull --ff-only origin "${GITHUB_REF_NAME}"
+      - name: 組合網站（首頁、總經儀表板、減重規劃）
+        run: |
+          mkdir -p _site/macro
+          cp index.html weight-loss-plan.html _site/
+          cp macro/index.html _site/macro/
+          cp -r macro/data _site/macro/
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: macro
+          path: _site
       - id: deployment
         uses: actions/deploy-pages@v4

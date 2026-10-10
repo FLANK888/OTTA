@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OTTA 工具首頁</title>
+<meta name="description" content="總經風險儀表板與減重規劃">
+<style>
+:root {
+  color-scheme: light;
+  --page: #f9f9f7;
+  --surface: #fcfcfb;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --border: rgba(11,11,11,0.10);
+  --accent: #2a78d6;
+  --font: system-ui, -apple-system, "Segoe UI", "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --page: #0d0d0d;
+    --surface: #1a1a19;
+    --ink: #f0efec;
+    --ink-2: #c3c2b7;
+    --border: rgba(255,255,255,0.10);
+    --accent: #3987e5;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #0d0d0d;
+  --surface: #1a1a19;
+  --ink: #f0efec;
+  --ink-2: #c3c2b7;
+  --border: rgba(255,255,255,0.10);
+  --accent: #3987e5;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--page); color: var(--ink); font: 15px/1.6 var(--font); }
+.wrap { max-width: 760px; margin: 0 auto; padding: 48px 16px; }
+h1 { font-size: 26px; margin: 0 0 6px; }
+p.lead { color: var(--ink-2); margin: 0 0 28px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+a.card {
+  display: block; text-decoration: none; color: inherit; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 14px; padding: 20px;
+  transition: border-color .15s, transform .15s;
+}
+a.card:hover, a.card:focus-visible { border-color: var(--accent); transform: translateY(-2px); outline: none; }
+a.card h2 { font-size: 18px; margin: 0 0 6px; }
+a.card p { color: var(--ink-2); margin: 0 0 12px; font-size: 14px; }
+a.card span { color: var(--accent); font-weight: 600; font-size: 14px; }
+footer { margin-top: 36px; color: var(--ink-2); font-size: 12px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>OTTA 工具首頁</h1>
+  <p class="lead">選擇要開啟的頁面。</p>
+  <div class="grid">
+    <a class="card" href="macro/">
+      <h2>總經風險儀表板</h2>
+      <p>每週自動更新美國總體經濟數據，並換算成 0–100 的投資風險分數與參考配置。</p>
+      <span>開啟 →</span>
+    </a>
+    <a class="card" href="weight-loss-plan.html">
+      <h2>減重規劃</h2>
+      <p>個人化減重計畫，以及每週體重、運動與 BMI 紀錄。</p>
+      <span>開啟 →</span>
+    </a>
+  </div>
+  <footer>總經數據來源：FRED, Federal Reserve Bank of St. Louis。內容僅供參考，不構成投資或醫療建議。</footer>
+</div>
+</body>
+</html>
