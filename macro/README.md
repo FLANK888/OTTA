@@ -15,7 +15,7 @@
 
 ## 部署
 
-1. 把分支合併到 `main`。
+1. 把分支合併到 repo 的預設分支（排程只會在預設分支上執行）。
 2. 到 GitHub repo 的 **Settings → Pages → Build and deployment**，把 Source 設為 **GitHub Actions**。
 3. 到 **Actions → 每週更新總經風險儀表板 → Run workflow** 手動執行一次。第一次執行時，FRED 真實數據會取代目前 repo 裡的示範資料。
 4. 之後每週六 01:17 UTC 會自動更新。
