@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>手習い帳</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<style>
+/* Layout: one narrow notebook column; each question is a sheet with a prompt on top and 田字格 practice boxes below. */
+:root{
+  --paper:#f4f6f1; --sheet:#ffffff; --ink:#1e2433; --muted:#5d6474; --line:#dfe4dc;
+  --grid:#8fbfae; --grid-faint:#c7e0d6; --accent:#2f4a8a; --accent-soft:#e6ebf6;
+  --shu:#cf3b2b; --shu-soft:#fbe9e6; --ghost:rgba(30,36,51,.13); --pen:#1e2433;
+  --f-jp:"Klee One","Hiragino Mincho ProN","Yu Mincho",serif;
+  --f-ui:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --box:clamp(64px,19vw,96px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#13161c; --sheet:#1b1f27; --ink:#e7e9ef; --muted:#9aa1b0; --line:#2b313c;
+    --grid:#3f7363; --grid-faint:#2a4a40; --accent:#93abea; --accent-soft:#232c42;
+    --shu:#ff6b57; --shu-soft:#3a2220; --ghost:rgba(231,233,239,.16); --pen:#eef0f5;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#13161c; --sheet:#1b1f27; --ink:#e7e9ef; --muted:#9aa1b0; --line:#2b313c;
+  --grid:#3f7363; --grid-faint:#2a4a40; --accent:#93abea; --accent-soft:#232c42;
+  --shu:#ff6b57; --shu-soft:#3a2220; --ghost:rgba(231,233,239,.16); --pen:#eef0f5;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-ui);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:780px;margin:0 auto;padding:28px 16px 64px;display:flex;flex-direction:column;gap:20px}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* Header */
+header{display:flex;flex-direction:column;gap:14px}
+.title-row{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{font-family:var(--f-jp);font-weight:600;font-size:2.1rem;line-height:1.1;margin:0;letter-spacing:.04em;text-wrap:balance}
+h1 small{display:block;font-family:var(--f-ui);font-weight:400;font-size:.8rem;color:var(--muted);letter-spacing:.02em;margin-top:6px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:3px;background:var(--sheet)}
+.seg button{border:0;background:none;padding:6px 14px;border-radius:999px;font-size:.88rem;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--sheet);font-weight:500}
+.datebar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.datebar .date{font-family:var(--f-jp);font-size:1.25rem;font-weight:600;min-width:0}
+.icon-btn{border:1px solid var(--line);background:var(--sheet);border-radius:8px;width:34px;height:34px;display:inline-grid;place-items:center;padding:0}
+.icon-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.text-btn{border:1px solid var(--line);background:var(--sheet);border-radius:8px;padding:5px 12px;font-size:.85rem}
+.progress{margin-left:auto;font-size:.88rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.progress b{color:var(--ink)}
+
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.day{border:1px solid var(--line);background:var(--sheet);border-radius:10px;padding:6px 0 4px;display:flex;flex-direction:column;align-items:center;gap:0;position:relative;min-height:62px}
+.day .wd{font-family:var(--f-jp);font-size:.8rem;color:var(--muted)}
+.day .dn{font-weight:500;font-variant-numeric:tabular-nums}
+.day.sel{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.day .mk{height:14px;display:grid;place-items:center}
+.day .mk svg{width:22px;height:22px;margin-top:-4px}
+.day .dot{width:6px;height:6px;border-radius:50%;background:var(--grid)}
+
+/* Question sheet */
+.sheet{background:var(--sheet);border:1px solid var(--line);border-radius:14px;padding:18px 18px 16px;display:flex;flex-direction:column;gap:14px;position:relative}
+.q-head{display:flex;gap:14px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
+.q-main{display:flex;flex-direction:column;gap:2px;min-width:0}
+.q-no{font-size:.75rem;letter-spacing:.12em;color:var(--muted)}
+.q-ask{font-size:.85rem;color:var(--accent);font-weight:500}
+.q-big{font-family:var(--f-jp);font-size:2rem;font-weight:600;line-height:1.25;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.q-mean{color:var(--muted)}
+.speak{border:0;background:var(--accent-soft);color:var(--accent);border-radius:50%;width:32px;height:32px;display:inline-grid;place-items:center;padding:0}
+.speak svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.tools{display:flex;gap:6px;flex-wrap:wrap}
+.tool{border:1px solid var(--line);background:none;border-radius:8px;padding:5px 11px;font-size:.84rem}
+.tool[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+
+.rows{display:flex;flex-direction:column;gap:10px}
+.row{display:flex;align-items:center;gap:10px}
+.row-label{writing-mode:vertical-rl;font-size:.72rem;letter-spacing:.2em;color:var(--muted);flex:none}
+.boxes{display:flex;flex-wrap:wrap;gap:0;min-width:0}
+.box{width:var(--box);height:var(--box);position:relative;border:1.5px solid var(--grid);margin:0 -1.5px -1.5px 0;touch-action:none;
+  background:
+    linear-gradient(var(--grid-faint),var(--grid-faint)) center/100% 1px no-repeat,
+    linear-gradient(var(--grid-faint),var(--grid-faint)) center/1px 100% no-repeat;}
+.box::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(90deg,var(--sheet) 0 3px,transparent 3px 6px) center/100% 1px no-repeat,
+             repeating-linear-gradient(0deg,var(--sheet) 0 3px,transparent 3px 6px) center/1px 100% no-repeat}
+.box .ghost{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--f-jp);font-size:calc(var(--box)*.78);line-height:1;color:var(--ghost);user-select:none;pointer-events:none;z-index:1}
+.box canvas{position:absolute;inset:0;width:100%;height:100%;z-index:2;cursor:crosshair}
+
+.answer{border-top:1px dashed var(--line);padding-top:12px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.answer .a-word{font-family:var(--f-jp);font-size:2.6rem;line-height:1.2}
+.answer ruby rt{font-size:.38em;color:var(--muted)}
+.answer .a-meta{color:var(--muted);font-size:.9rem;min-width:0}
+.grade{display:flex;gap:8px;margin-left:auto}
+.grade button{border:1px solid var(--line);background:none;border-radius:8px;padding:6px 12px;font-size:.88rem}
+.grade .ok{border-color:var(--shu);color:var(--shu)}
+.grade .ok[aria-pressed="true"]{background:var(--shu);color:var(--sheet)}
+.grade .again[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+
+.stamp{position:absolute;top:10px;right:12px;width:74px;height:74px;pointer-events:none;transform:rotate(-12deg);opacity:0;transition:opacity .25s,transform .25s}
+.sheet.done .stamp{opacity:.9;transform:rotate(-8deg)}
+.sheet.done .tools{margin-right:72px}
+
+.done-banner{border:1.5px solid var(--shu);background:var(--shu-soft);color:var(--shu);border-radius:12px;padding:12px 16px;font-family:var(--f-jp);font-size:1.15rem;font-weight:600;display:flex;align-items:center;gap:10px}
+.done-banner svg{width:40px;height:40px;flex:none}
+footer{color:var(--muted);font-size:.8rem}
+
+@media (max-width:520px){
+  h1{font-size:1.7rem}
+  .q-big{font-size:1.7rem}
+  .sheet{padding:14px 14px 12px}
+  .row-label{display:none}
+  .grade{margin-left:0}
+}
+@media (prefers-reduced-motion:reduce){ .stamp{transition:none} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="title-row">
+      <h1>手習い帳<small>日文手寫練習・每天五個單字</small></h1>
+      <div class="seg" role="group" aria-label="書寫目標">
+        <button id="mode-kanji" data-mode="kanji">寫漢字</button>
+        <button id="mode-kana" data-mode="kana">寫假名</button>
+      </div>
+    </div>
+    <div class="datebar">
+      <button class="icon-btn" id="prev" aria-label="前一天"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button>
+      <span class="date" id="date"></span>
+      <button class="icon-btn" id="next" aria-label="後一天"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+      <button class="text-btn" id="today" hidden>回到今天</button>
+      <span class="progress" id="progress"></span>
+    </div>
+    <div class="week" id="week"></div>
+  </header>
+
+  <div id="banner" hidden></div>
+  <main id="list" style="display:flex;flex-direction:column;gap:16px"></main>
+
+  <footer>手寫內容與自評只存在這台裝置的瀏覽器裡。單字依日期輪替，同一天打開都是同樣五個字。</footer>
+</div>
+
+<script>
+// [表記, 讀音, 中文, 英文來源(片假名用)]
+const WORDS = [
+  ["水","みず","水"],["火","ひ","火"],["山","やま","山"],["川","かわ","河川"],["木","き","樹木"],
+  ["花","はな","花"],["雨","あめ","雨"],["空","そら","天空"],["海","うみ","海"],["石","いし","石頭"],
+  ["人","ひと","人"],["女","おんな","女人"],["男","おとこ","男人"],["子供","こども","小孩"],["友達","ともだち","朋友"],
+  ["先生","せんせい","老師"],["学生","がくせい","學生"],["学校","がっこう","學校"],["会社","かいしゃ","公司"],["病院","びょういん","醫院"],
+  ["駅","えき","車站"],["電車","でんしゃ","電車"],["車","くるま","汽車"],["自転車","じてんしゃ","腳踏車"],["道","みち","道路"],
+  ["店","みせ","商店"],["家","いえ","家"],["部屋","へや","房間"],["本","ほん","書"],["新聞","しんぶん","報紙"],
+  ["手紙","てがみ","信"],["電話","でんわ","電話"],["時計","とけい","時鐘；手錶"],["傘","かさ","雨傘"],["机","つくえ","書桌"],
+  ["椅子","いす","椅子"],["窓","まど","窗戶"],["門","もん","大門"],["猫","ねこ","貓"],["犬","いぬ","狗"],
+  ["鳥","とり","鳥"],["魚","さかな","魚"],["肉","にく","肉"],["野菜","やさい","蔬菜"],["果物","くだもの","水果"],
+  ["卵","たまご","蛋"],["牛乳","ぎゅうにゅう","牛奶"],["お茶","おちゃ","茶"],["ご飯","ごはん","飯；餐"],["朝","あさ","早上"],
+  ["昼","ひる","中午"],["夜","よる","晚上"],["今日","きょう","今天"],["明日","あした","明天"],["昨日","きのう","昨天"],
+  ["毎日","まいにち","每天"],["時間","じかん","時間"],["春","はる","春天"],["夏","なつ","夏天"],["秋","あき","秋天"],
+  ["冬","ふゆ","冬天"],["天気","てんき","天氣"],["目","め","眼睛"],["耳","みみ","耳朵"],["口","くち","嘴巴"],
+  ["手","て","手"],["足","あし","腳"],["頭","あたま","頭"],["体","からだ","身體"],["名前","なまえ","名字"],
+  ["言葉","ことば","語言；詞彙"],["仕事","しごと","工作"],["休み","やすみ","休假"],["旅行","りょこう","旅行"],["写真","しゃしん","照片"],
+  ["映画","えいが","電影"],["音楽","おんがく","音樂"],["大きい","おおきい","大的"],["小さい","ちいさい","小的"],["高い","たかい","高的；貴的"],
+  ["安い","やすい","便宜的"],["新しい","あたらしい","新的"],["古い","ふるい","舊的"],["暑い","あつい","（天氣）熱的"],["寒い","さむい","（天氣）冷的"],
+  ["楽しい","たのしい","快樂的"],["食べる","たべる","吃"],["飲む","のむ","喝"],["見る","みる","看"],["聞く","きく","聽；問"],
+  ["読む","よむ","讀"],["書く","かく","寫"],["話す","はなす","說話"],["行く","いく","去"],["来る","くる","來"],
+  ["帰る","かえる","回去"],["買う","かう","買"],["歩く","あるく","走路"],["寝る","ねる","睡覺"],["起きる","おきる","起床"],
+  ["コーヒー","コーヒー","咖啡","coffee"],["パン","パン","麵包","pão"],["テレビ","テレビ","電視","television"],["カメラ","カメラ","相機","camera"],
+  ["ホテル","ホテル","飯店","hotel"],["ノート","ノート","筆記本","notebook"],["ペン","ペン","筆","pen"],["バス","バス","公車","bus"],
+  ["タクシー","タクシー","計程車","taxi"],["レストラン","レストラン","餐廳","restaurant"],
+];
+const PER_DAY = 5, ROWS = 2;
+const WEEKDAY = ["日","月","火","水","木","金","土"];
+
+// 固定的洗牌順序：一輪內不重複，約 22 天輪完
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const ORDER = (() => { const r = mulberry32(5150), o = WORDS.map((_, i) => i);
+  for (let i = o.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [o[i], o[j]] = [o[j], o[i]]; } return o; })();
+
+const pad = n => String(n).padStart(2, "0");
+const keyOf = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const dayIndex = d => Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 864e5);
+const addDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
+const wordsFor = d => { const s = dayIndex(d) * PER_DAY; return Array.from({ length: PER_DAY }, (_, i) => ORDER[(s + i) % ORDER.length]); };
+const isKatakana = w => !!w[3];
+
+// 儲存（瀏覽器本機）
+const STORE = "jp-handwriting-v1";
+let state = { mode: "kanji", days: {} };
+try { const s = JSON.parse(localStorage.getItem(STORE)); if (s && s.days) state = Object.assign(state, s); } catch (e) {}
+let saveTimer;
+function save() { clearTimeout(saveTimer); saveTimer = setTimeout(() => { try { localStorage.setItem(STORE, JSON.stringify(state)); } catch (e) {} }, 300); }
+const dayData = k => state.days[k] || (state.days[k] = { grades: {}, strokes: {} });
+const dayStatus = d => { const k = keyOf(d), dd = state.days[k]; if (!dd) return 0;
+  const ok = wordsFor(d).filter(i => dd.grades[i] === "ok").length; return ok === PER_DAY ? 2 : (ok || Object.keys(dd.strokes).length ? 1 : 0); };
+
+// 花丸
+function hanamaru() {
+  let outer = "", inner = "";
+  for (let t = 0; t <= 720; t++) { const a = t / 720 * Math.PI * 2, r = 40 + 5 * Math.sin(a * 9);
+    outer += (t ? "L" : "M") + (50 + r * Math.cos(a)).toFixed(2) + " " + (50 + r * Math.sin(a)).toFixed(2); }
+  for (let t = 0; t <= 400; t++) { const a = t / 400 * Math.PI * 5, r = 4 + t / 400 * 26;
+    inner += (t ? "L" : "M") + (50 + r * Math.cos(a)).toFixed(2) + " " + (50 + r * Math.sin(a)).toFixed(2); }
+  return `<svg viewBox="0 0 100 100" aria-hidden="true"><path d="${outer}" fill="none" stroke="var(--shu)" stroke-width="3.2" stroke-linejoin="round"/><path d="${inner}" fill="none" stroke="var(--shu)" stroke-width="3.2" stroke-linecap="round"/></svg>`;
+}
+const HANAMARU = hanamaru();
+
+// 手寫格
+const boxes = new Set();
+function makeBox(ghostChar, strokes, onCommit) {
+  const el = document.createElement("div"); el.className = "box";
+  const g = document.createElement("span"); g.className = "ghost"; g.textContent = ghostChar || ""; g.hidden = true;
+  const cv = document.createElement("canvas"); el.append(g, cv);
+  const ctx = cv.getContext("2d");
+  const api = { el, ghost: g, strokes, redraw };
+  let cur = null;
+
+  function width(p) { return cv.width * 0.05 * (0.55 + 0.9 * p); }
+  function seg(a, b) {
+    ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue("--pen").trim() || "#1e2433";
+    ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.lineWidth = width((a[2] + b[2]) / 2);
+    ctx.beginPath(); ctx.moveTo(a[0] * cv.width, a[1] * cv.height); ctx.lineTo(b[0] * cv.width, b[1] * cv.height); ctx.stroke();
+  }
+  function drawStroke(s) { if (s.length === 1) seg(s[0], s[0]); for (let i = 1; i < s.length; i++) seg(s[i - 1], s[i]); }
+  function redraw() {
+    const r = el.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+    const w = Math.max(1, Math.round(r.width * dpr)), h = Math.max(1, Math.round(r.height * dpr));
+    if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
+    ctx.clearRect(0, 0, cv.width, cv.height); api.strokes.forEach(drawStroke);
+  }
+  function pt(e) { const r = cv.getBoundingClientRect();
+    const p = e.pointerType === "pen" ? (e.pressure || 0.5) : 0.5;
+    return [+((e.clientX - r.left) / r.width).toFixed(3), +((e.clientY - r.top) / r.height).toFixed(3), +p.toFixed(2)]; }
+  cv.addEventListener("pointerdown", e => { if (e.button > 0) return; e.preventDefault(); cv.setPointerCapture(e.pointerId);
+    cur = [pt(e)]; seg(cur[0], cur[0]); });
+  cv.addEventListener("pointermove", e => { if (!cur) return;
+    const evs = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
+    for (const ev of (evs.length ? evs : [e])) { const p = pt(ev), last = cur[cur.length - 1];
+      if (Math.abs(p[0] - last[0]) + Math.abs(p[1] - last[1]) < 0.004) continue; cur.push(p); seg(last, p); } });
+  const end = () => { if (!cur) return; api.strokes.push(cur); cur = null; onCommit(api); };
+  cv.addEventListener("pointerup", end); cv.addEventListener("pointercancel", end);
+  new ResizeObserver(redraw).observe(el);
+  boxes.add(api);
+  return api;
+}
+
+// 語音
+const canSpeak = "speechSynthesis" in window;
+function speak(text) { try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = "ja-JP"; u.rate = 0.85;
+  const v = speechSynthesis.getVoices().find(v => v.lang && v.lang.startsWith("ja")); if (v) u.voice = v; speechSynthesis.speak(u); } catch (e) {} }
+
+// 畫面
+let current = new Date(); current = new Date(current.getFullYear(), current.getMonth(), current.getDate());
+const $ = id => document.getElementById(id);
+
+function promptFor(w) {
+  const [hyoki, kana, zh, src] = w;
+  if (isKatakana(w)) return { ask: "寫出片假名", big: `「${src}」`, mean: zh, target: hyoki };
+  if (state.mode === "kana") return { ask: "寫出讀音（平假名）", big: hyoki, mean: zh, target: kana };
+  return { ask: "寫出漢字", big: kana, mean: zh, target: hyoki };
+}
+
+function renderSheet(wi, n, dd) {
+  const w = WORDS[wi], p = promptFor(w), chars = Array.from(p.target);
+  const skey = `${wi}:${p.target}`;
+  const saved = dd.strokes[skey] || [];
+  const sheet = document.createElement("section"); sheet.className = "sheet";
+  sheet.innerHTML = `
+    <div class="stamp">${HANAMARU}</div>
+    <div class="q-head">
+      <div class="q-main">
+        <span class="q-no">第 ${n} 題</span>
+        <span class="q-ask">${p.ask}・${chars.length} 個字</span>
+        <div class="q-big"><span>${p.big}</span>${canSpeak ? `<button class="speak" aria-label="播放發音"><svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/></svg></button>` : ""}</div>
+        <span class="q-mean">${p.mean}</span>
+      </div>
+      <div class="tools">
+        <button class="tool" data-act="hint" aria-pressed="false">描紅</button>
+        <button class="tool" data-act="undo">復原</button>
+        <button class="tool" data-act="clear">清除</button>
+        <button class="tool" data-act="reveal" aria-pressed="false">對答案</button>
+      </div>
+    </div>
+    <div class="rows"></div>
+    <div class="answer" hidden>
+      <span class="a-word">${w[0] !== w[1] ? `<ruby>${w[0]}<rt>${w[1]}</rt></ruby>` : w[0]}</span>
+      <span class="a-meta">${w[2]}${w[3] ? `<br>${w[3]}` : ""}</span>
+      <div class="grade">
+        <button class="ok" aria-pressed="false">○ 寫對了</button>
+        <button class="again" aria-pressed="false">△ 再練習</button>
+      </div>
+    </div>`;
+
+  const rowsEl = sheet.querySelector(".rows"), history = [], api = [];
+  const commit = b => { history.push(b); dd.strokes[skey] = api.map(a => a.strokes); save(); renderHeader(); };
+  for (let r = 0; r < ROWS; r++) {
+    const row = document.createElement("div"); row.className = "row";
+    row.innerHTML = `<span class="row-label">${r === 0 ? "練習" : "默寫"}</span><div class="boxes"></div>`;
+    const bx = row.querySelector(".boxes");
+    chars.forEach((c, i) => { const idx = r * chars.length + i;
+      const b = makeBox(r === 0 ? c : "", (saved[idx] || []).slice(), commit); api.push(b); bx.append(b.el); });
+    rowsEl.append(row);
+  }
+
+  const answer = sheet.querySelector(".answer"), ok = sheet.querySelector(".ok"), again = sheet.querySelector(".again");
+  const reflectGrade = () => { const g = dd.grades[wi];
+    ok.setAttribute("aria-pressed", g === "ok"); again.setAttribute("aria-pressed", g === "again");
+    sheet.classList.toggle("done", g === "ok"); if (g) { answer.hidden = false; sheet.querySelector('[data-act="reveal"]').setAttribute("aria-pressed", "true"); } };
+  const setGrade = g => { dd.grades[wi] = dd.grades[wi] === g ? undefined : g; if (!dd.grades[wi]) delete dd.grades[wi]; save(); reflectGrade(); renderHeader(); };
+  ok.onclick = () => setGrade("ok"); again.onclick = () => setGrade("again");
+
+  sheet.querySelector(".tools").addEventListener("click", e => {
+    const btn = e.target.closest("button"); if (!btn) return;
+    const act = btn.dataset.act;
+    if (act === "hint") { const on = btn.getAttribute("aria-pressed") !== "true"; btn.setAttribute("aria-pressed", on); api.forEach(a => a.ghost.hidden = !on); }
+    if (act === "undo") { const b = history.pop() || [...api].reverse().find(a => a.strokes.length);
+      if (b) { b.strokes.pop(); b.redraw(); dd.strokes[skey] = api.map(a => a.strokes); save(); } }
+    if (act === "clear") { api.forEach(a => { a.strokes.length = 0; a.redraw(); }); history.length = 0; delete dd.strokes[skey]; save(); renderHeader(); }
+    if (act === "reveal") { const on = btn.getAttribute("aria-pressed") !== "true"; btn.setAttribute("aria-pressed", on); answer.hidden = !on; }
+  });
+  const sp = sheet.querySelector(".speak"); if (sp) sp.onclick = () => speak(w[1]);
+  reflectGrade();
+  return sheet;
+}
+
+function renderHeader() {
+  const today = new Date(), t0 = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  $("date").textContent = `${current.getFullYear()}年${current.getMonth() + 1}月${current.getDate()}日（${WEEKDAY[current.getDay()]}）`;
+  $("today").hidden = keyOf(current) === keyOf(t0);
+  const dd = state.days[keyOf(current)] || { grades: {} };
+  const okN = wordsFor(current).filter(i => dd.grades[i] === "ok").length;
+  $("progress").innerHTML = `今日完成 <b>${okN}</b> / ${PER_DAY}`;
+  const wk = $("week"); wk.innerHTML = "";
+  for (let i = 6; i >= 0; i--) {
+    const d = addDays(t0, -i), st = dayStatus(d);
+    const b = document.createElement("button"); b.className = "day" + (keyOf(d) === keyOf(current) ? " sel" : "");
+    b.setAttribute("aria-label", `${d.getMonth() + 1}月${d.getDate()}日`);
+    b.innerHTML = `<span class="wd">${WEEKDAY[d.getDay()]}</span><span class="dn">${d.getDate()}</span><span class="mk">${st === 2 ? HANAMARU : st === 1 ? '<span class="dot"></span>' : ""}</span>`;
+    b.onclick = () => { current = d; render(); };
+    wk.append(b);
+  }
+  const banner = $("banner");
+  banner.hidden = okN !== PER_DAY;
+  if (okN === PER_DAY) banner.innerHTML = `<div class="done-banner">${HANAMARU}<span>よくできました！今天的五個字都寫完了。</span></div>`;
+}
+
+function render() {
+  boxes.clear();
+  document.querySelectorAll(".seg button").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === state.mode));
+  const dd = dayData(keyOf(current)), list = $("list"); list.innerHTML = "";
+  wordsFor(current).forEach((wi, i) => list.append(renderSheet(wi, i + 1, dd)));
+  renderHeader();
+}
+
+document.querySelectorAll(".seg button").forEach(b => b.onclick = () => { state.mode = b.dataset.mode; save(); render(); });
+$("prev").onclick = () => { current = addDays(current, -1); render(); };
+$("next").onclick = () => { current = addDays(current, 1); render(); };
+$("today").onclick = () => { const t = new Date(); current = new Date(t.getFullYear(), t.getMonth(), t.getDate()); render(); };
+
+// 主題切換時重畫筆跡顏色
+const redrawAll = () => boxes.forEach(b => b.redraw());
+matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", redrawAll);
+new MutationObserver(redrawAll).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+render();
+</script>
+</body>
+</html>
