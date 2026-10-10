@@ -1,0 +1,422 @@
+<title>圖片轉文字</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one working column — drop zone on top, one result card per image below, a sticky action bar for exporting everything. */
+:root {
+  --bg: #eef1f4;
+  --surface: #ffffff;
+  --ink: #18202b;
+  --muted: #5d6877;
+  --line: #d5dbe3;
+  --accent: #1f5fa8;
+  --accent-soft: #e2ecf8;
+  --warn: #9a5b00;
+  --danger: #b3261e;
+  --font-display: "LXGW WenKai TC", "Kaiti TC", "DFKai-SB", serif;
+  --font-body: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12161c; --surface: #1a2028; --ink: #e6ebf1; --muted: #98a3b1; --line: #2c3540;
+    --accent: #7fb0ec; --accent-soft: #1d2b3d; --warn: #e0a64a; --danger: #f08a82; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12161c; --surface: #1a2028; --ink: #e6ebf1; --muted: #98a3b1; --line: #2c3540;
+  --accent: #7fb0ec; --accent-soft: #1d2b3d; --warn: #e0a64a; --danger: #f08a82; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.7; }
+.wrap { max-width: 920px; margin: 0 auto; padding-inline: 16px; padding-block: 28px 96px; display: flex; flex-direction: column; gap: 20px; }
+h1 { font-family: var(--font-display); font-size: 2rem; font-weight: 700; margin: 0; text-wrap: balance; letter-spacing: .02em; }
+.lede { margin: 4px 0 0; color: var(--muted); max-width: 60ch; }
+.drop {
+  border: 2px dashed var(--line); border-radius: 14px; background: var(--surface);
+  padding: 28px 20px; display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center;
+  transition: border-color .15s, background .15s;
+}
+.drop.over { border-color: var(--accent); background: var(--accent-soft); }
+.drop p { margin: 0; color: var(--muted); }
+.drop strong { color: var(--ink); font-weight: 500; }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.opts { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; color: var(--muted); font-size: .9rem; }
+.opts label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+select { font: inherit; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 4px 8px; }
+button {
+  font: inherit; font-size: .9rem; cursor: pointer; border-radius: 8px; padding: 7px 14px;
+  border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+}
+button:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+button:focus-visible, select:focus-visible, textarea:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+button.primary { background: var(--accent); border-color: var(--accent); color: var(--surface); font-weight: 500; }
+button.primary:hover:not(:disabled) { color: var(--surface); filter: brightness(1.08); }
+button:disabled { opacity: .5; cursor: default; }
+.notice { font-size: .9rem; color: var(--warn); margin: 0; }
+.notice[data-kind="error"] { color: var(--danger); }
+.list { display: flex; flex-direction: column; gap: 16px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr); gap: 16px; }
+@media (max-width: 640px) { .card { grid-template-columns: minmax(0, 1fr); } }
+.thumb { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.thumb img { width: 100%; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); max-height: 320px; object-fit: contain; }
+.fname { font-family: var(--font-mono); font-size: .8rem; color: var(--muted); word-break: break-all; }
+.body { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; }
+.pill { font-family: var(--font-mono); font-size: .75rem; letter-spacing: .04em; padding: 2px 10px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
+.pill[data-s="done"] { color: var(--accent); border-color: var(--accent); }
+.pill[data-s="busy"] { color: var(--warn); border-color: var(--warn); }
+.pill[data-s="error"] { color: var(--danger); border-color: var(--danger); }
+.pill[data-s="example"] { color: var(--muted); border-style: dashed; }
+textarea {
+  width: 100%; min-height: 180px; resize: vertical; font: inherit; font-size: 1rem; line-height: 1.8;
+  color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px;
+}
+.count { font-family: var(--font-mono); font-size: .78rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.bar {
+  position: fixed; left: 0; right: 0; bottom: 0; background: var(--surface); border-top: 1px solid var(--line);
+  padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
+}
+.bar .inner { max-width: 920px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
+@media (max-width: 520px) {
+  .bar .inner { gap: 6px; }
+  .bar .row { gap: 6px; flex-wrap: nowrap; width: 100%; }
+  .bar .row button { flex: 1 1 0; min-width: 0; padding: 6px 4px; font-size: .78rem; }
+  .wrap { padding-block: 28px 130px; }
+}
+.bar .summary { color: var(--muted); font-size: .9rem; font-variant-numeric: tabular-nums; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>圖片轉文字</h1>
+    <p class="lede">上傳照片或掃描檔，辨識圖片上的文字並轉成可編輯的鍵打文字，再下載成 HTML、TXT 或 Markdown。</p>
+  </header>
+
+  <section class="drop" id="drop" aria-label="上傳圖片">
+    <p><strong>拖放圖片到這裡</strong>，或直接貼上 (Ctrl/⌘ + V)</p>
+    <div class="row">
+      <button class="primary" id="pick" type="button">選擇圖片</button>
+      <input class="sr" type="file" id="file" accept="image/*" multiple>
+    </div>
+    <div class="opts">
+      <label for="lang">輸出文字
+        <select id="lang">
+          <option value="keep">保持原文</option>
+          <option value="tw">轉成繁體中文</option>
+          <option value="cn">轉成簡體中文</option>
+        </select>
+      </label>
+      <label><input type="checkbox" id="layout" checked> 保留段落與換行</label>
+    </div>
+    <p class="notice" id="notice" hidden></p>
+  </section>
+
+  <section class="list" id="list" aria-live="polite"></section>
+</div>
+
+<div class="bar">
+  <div class="inner">
+    <span class="summary" id="summary"></span>
+    <div class="row">
+      <button type="button" id="copyAll">複製全部</button>
+      <button type="button" id="dlTxt">下載 TXT</button>
+      <button type="button" id="dlMd">下載 Markdown</button>
+      <button class="primary" type="button" id="dlHtml">下載 HTML</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var SAMPLE_IMG = "__SAMPLE_DATA_URI__";
+  var SAMPLE_TEXT = "今天天氣很好，我們去公園散步。\n圖片文字辨識測試 OCR Test 2026\n繁體中文與 English 混合排版。";
+
+  var $ = function (id) { return document.getElementById(id); };
+  var listEl = $("list"), notice = $("notice");
+  var items = [];          // {id, name, url, blob, text, status, error}
+  var seq = 0;
+  var sample = null, downloads = null, imgLimits = null, ready = false;
+  var queue = [], running = false;
+
+  function showNotice(msg, kind) {
+    notice.textContent = msg || "";
+    notice.hidden = !msg;
+    if (kind) notice.dataset.kind = kind; else delete notice.dataset.kind;
+  }
+
+  // ---------- rendering ----------
+  var STATUS_LABEL = { queued: "等待中", busy: "辨識中…", done: "完成", error: "失敗", example: "範例" };
+
+  function render() {
+    listEl.textContent = "";
+    items.forEach(function (it) { listEl.appendChild(card(it)); });
+    updateSummary();
+  }
+
+  function card(it) {
+    var c = document.createElement("article");
+    c.className = "card";
+
+    var t = document.createElement("div");
+    t.className = "thumb";
+    var img = document.createElement("img");
+    img.src = it.url; img.alt = it.name;
+    var fn = document.createElement("div");
+    fn.className = "fname"; fn.textContent = it.name;
+    t.append(img, fn);
+
+    var b = document.createElement("div");
+    b.className = "body";
+    var head = document.createElement("div");
+    head.className = "head";
+    var pill = document.createElement("span");
+    pill.className = "pill"; pill.dataset.s = it.status; pill.textContent = STATUS_LABEL[it.status];
+    var actions = document.createElement("div");
+    actions.className = "row";
+
+    var copy = button("複製", function () { copyText(ta.value, copy); });
+    var redo = button("重新辨識", function () { enqueue(it); });
+    redo.disabled = it.status === "busy" || it.status === "queued" || !it.blob;
+    var del = button("移除", function () {
+      items = items.filter(function (x) { return x !== it; });
+      queue = queue.filter(function (x) { return x !== it; });
+      render();
+    });
+    actions.append(copy, redo, del);
+    head.append(pill, actions);
+
+    var ta = document.createElement("textarea");
+    ta.id = "text-" + it.id;
+    ta.setAttribute("aria-label", it.name + " 的辨識文字");
+    ta.value = it.text;
+    ta.placeholder = it.status === "busy" ? "辨識中…" : "";
+    ta.readOnly = it.status === "busy";
+    var count = document.createElement("div");
+    count.className = "count";
+    function setCount() { count.textContent = ta.value.replace(/\s/g, "").length + " 字"; }
+    ta.addEventListener("input", function () { it.text = ta.value; setCount(); updateSummary(); });
+    setCount();
+    it.textarea = ta;
+
+    b.append(head, ta);
+    if (it.error) {
+      var e = document.createElement("p");
+      e.className = "notice"; e.dataset.kind = "error"; e.textContent = it.error;
+      b.append(e);
+    }
+    b.append(count);
+    c.append(t, b);
+    return c;
+  }
+
+  function button(label, fn) {
+    var x = document.createElement("button");
+    x.type = "button"; x.textContent = label; x.addEventListener("click", fn);
+    return x;
+  }
+
+  function updateSummary() {
+    var real = items.filter(function (i) { return i.status !== "example"; });
+    var done = real.filter(function (i) { return i.status === "done"; }).length;
+    var chars = items.reduce(function (n, i) { return n + i.text.replace(/\s/g, "").length; }, 0);
+    $("summary").textContent = items.length
+      ? (real.length ? done + " / " + real.length + " 張完成 · " : "範例 · ") + chars + " 字"
+      : "尚未加入圖片";
+    var has = items.some(function (i) { return i.text.trim(); });
+    ["copyAll", "dlTxt", "dlMd", "dlHtml"].forEach(function (id) { $(id).disabled = !has; });
+  }
+
+  // ---------- input ----------
+  function addFiles(files) {
+    var imgs = Array.prototype.filter.call(files, function (f) { return /^image\//.test(f.type); });
+    if (!imgs.length) { showNotice("請選擇圖片檔（JPG、PNG、WebP 等）。", "error"); return; }
+    if (!ready) { showNotice("正在連線到 Claude，請過幾秒再試一次。"); return; }
+    if (!sample) { showNotice("這個檢視無法使用 Claude 辨識，請在 claude.ai 開啟此頁面。", "error"); return; }
+    if (!imgLimits) { showNotice("這個檢視無法傳送圖片給 Claude。", "error"); return; }
+    showNotice("");
+    items = items.filter(function (i) { return i.status !== "example"; });
+    imgs.forEach(function (f, n) {
+      var it = { id: ++seq, name: f.name || ("貼上的圖片 " + seq + ".png"), url: URL.createObjectURL(f), blob: f, text: "", status: "queued", error: "" };
+      items.push(it); queue.push(it);
+    });
+    render(); pump();
+  }
+
+  $("pick").addEventListener("click", function () { $("file").click(); });
+  $("file").addEventListener("change", function (e) { addFiles(e.target.files); e.target.value = ""; });
+  var drop = $("drop");
+  ["dragenter", "dragover"].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.add("over"); }); });
+  ["dragleave", "drop"].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.remove("over"); }); });
+  drop.addEventListener("drop", function (e) { if (e.dataTransfer && e.dataTransfer.files) addFiles(e.dataTransfer.files); });
+  document.addEventListener("paste", function (e) {
+    var fs = [];
+    Array.prototype.forEach.call((e.clipboardData && e.clipboardData.items) || [], function (x) {
+      if (x.kind === "file") { var f = x.getAsFile(); if (f) fs.push(f); }
+    });
+    if (fs.length) { e.preventDefault(); addFiles(fs); }
+  });
+
+  // ---------- OCR ----------
+  function enqueue(it) {
+    it.status = "queued"; it.error = "";
+    if (queue.indexOf(it) < 0) queue.push(it);
+    render(); pump();
+  }
+
+  // Claude downsizes each image to about 1.2 MP, so tall pages are cut into horizontal bands to keep small text legible.
+  function cropBands(blob, maxCount) {
+    return createImageBitmap(blob).then(function (bmp) {
+      var w = Math.min(bmp.width, 1500), scale = w / bmp.width, h = Math.round(bmp.height * scale);
+      var n = Math.min(maxCount, Math.max(1, Math.ceil((w * h) / 1150000)));
+      if (n === 1) return { blobs: [blob], n: 1 };
+      var bandH = Math.ceil(h / n), overlap = 24, jobs = [];
+      for (var i = 0; i < n; i++) {
+        var y0 = i * bandH, bh = Math.min(bandH + overlap, h - y0);
+        var cv = document.createElement("canvas");
+        cv.width = w; cv.height = bh;
+        cv.getContext("2d").drawImage(bmp, 0, y0 / scale, bmp.width, bh / scale, 0, 0, w, bh);
+        jobs.push(new Promise(function (res) { cv.toBlob(res, "image/png"); }));
+      }
+      return Promise.all(jobs).then(function (blobs) { return { blobs: blobs, n: n }; });
+    });
+  }
+
+  function prompt(n) {
+    var lang = $("lang").value, keep = $("layout").checked;
+    var lines = [
+      "你是精確的文字辨識 (OCR) 工具。把圖片中的所有文字逐字轉寫成純文字。",
+      n > 1 ? "這 " + n + " 張圖片是同一頁由上到下依序切開的片段，相鄰片段在接縫處有少量重疊；請合併成一份連續文字，接縫處重複的行只保留一次。" : "",
+      "規則：",
+      "- 只輸出辨識到的文字，不要加任何說明、標題、引號或程式碼區塊。",
+      "- 依閱讀順序輸出；多欄排版先讀完左欄再讀右欄。",
+      keep ? "- 保留原本的段落與換行。" : "- 把同一段落的斷行接起來，段落之間空一行。",
+      "- 中文使用全形標點。",
+      "- 表格用 Tab 分隔欄位，每列一行。",
+      "- 看不清楚的字用 □ 表示，不要猜測或補寫。",
+      lang === "tw" ? "- 簡體字一律轉成繁體中文（台灣用字）。" : lang === "cn" ? "- 繁體字一律轉成簡體中文。" : "- 保持原文的繁簡體與語言，不要翻譯。",
+      "- 如果圖片中沒有任何文字，只輸出：（未辨識到文字）"
+    ];
+    return lines.filter(Boolean).join("\n");
+  }
+
+  var ERR = {
+    not_granted: "需要你允許此頁面使用 Claude 才能辨識。重新整理頁面後可再次選擇。",
+    rate_limited: "請求太頻繁，請稍候再按「重新辨識」。",
+    image_rejected: "這張圖片格式不支援或太大（上限 20 MB、單邊 10,000 像素）。",
+    images_unavailable: "這個檢視無法傳送圖片給 Claude。",
+    prompt_too_large: "內容太大，請把圖片裁小一點再試。",
+    cancelled: "已取消。"
+  };
+
+  function pump() {
+    if (running || !queue.length) return;
+    var it = queue.shift();
+    if (items.indexOf(it) < 0) { pump(); return; }
+    running = true;
+    it.status = "busy"; it.text = ""; it.error = "";
+    render();
+    cropBands(it.blob, imgLimits.maxCount || 1).then(function (r) {
+      return sample(prompt(r.n), {
+        images: r.blobs,
+        modelTier: "default",
+        onText: function (p) { it.text = p.text; if (it.textarea) { it.textarea.value = p.text; } }
+      });
+    }).then(function (res) {
+      it.text = cleanup(res.text);
+      it.status = "done";
+      if (res.truncated) it.error = "文字太長被截斷，請把圖片切成較小的部分再辨識。";
+    }).catch(function (e) {
+      it.status = "error";
+      it.text = e && e.text ? cleanup(e.text) : it.text;
+      it.error = (e && ERR[e.code]) || "辨識失敗" + (e && e.message ? "：" + e.message : "") + "。可以按「重新辨識」再試一次。";
+    }).then(function () {
+      running = false; render(); pump();
+    });
+  }
+
+  function cleanup(t) {
+    return String(t || "").replace(/^```[a-z]*\n?|\n?```\s*$/g, "").trim();
+  }
+
+  // ---------- export ----------
+  function sections() {
+    return items.filter(function (i) { return i.text.trim(); });
+  }
+  function stamp() {
+    var d = new Date(), p = function (n) { return String(n).padStart(2, "0"); };
+    return d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + "-" + p(d.getHours()) + p(d.getMinutes());
+  }
+  function esc(s) { return s.replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+
+  function asTxt() {
+    var s = sections();
+    return s.length === 1 ? s[0].text.trim() + "\n" : s.map(function (i) { return "== " + i.name + " ==\n" + i.text.trim(); }).join("\n\n") + "\n";
+  }
+  function asMd() {
+    return "# 圖片文字辨識結果\n\n" + sections().map(function (i) { return "## " + i.name + "\n\n" + i.text.trim(); }).join("\n\n") + "\n";
+  }
+  function asHtml() {
+    var body = sections().map(function (i) {
+      return "<section><h2>" + esc(i.name) + "</h2><p>" + esc(i.text.trim()) + "</p></section>";
+    }).join("\n");
+    return "<!doctype html>\n<html lang=\"zh-Hant\">\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n<title>圖片文字辨識結果</title>\n<style>\n" +
+      ":root{--bg:#fff;--fg:#18202b;--muted:#5d6877;--line:#d5dbe3}\n@media (prefers-color-scheme:dark){:root{--bg:#12161c;--fg:#e6ebf1;--muted:#98a3b1;--line:#2c3540}}\n" +
+      "body{margin:0;background:var(--bg);color:var(--fg);font-family:\"Noto Sans TC\",\"PingFang TC\",\"Microsoft JhengHei\",system-ui,sans-serif;line-height:1.8}\n" +
+      "main{max-width:760px;margin:0 auto;padding:32px 16px}h1{font-size:1.5rem}h2{font-size:1rem;color:var(--muted);border-bottom:1px solid var(--line);padding-bottom:4px}\n" +
+      "p{white-space:pre-wrap;word-break:break-word}\n</style>\n</head>\n<body>\n<main>\n<h1>圖片文字辨識結果</h1>\n" + body + "\n</main>\n</body>\n</html>\n";
+  }
+
+  function save(ext, data, btn) {
+    if (!downloads) { showNotice("這個檢視無法下載檔案，請改用「複製全部」。", "error"); return; }
+    btn.disabled = true;
+    downloads.save({ filename: "辨識結果-" + stamp() + "." + ext, data: data })
+      .then(function () { flash(btn, "已下載"); })
+      .catch(function (e) {
+        if (e && e.code === "declined") return;
+        showNotice(e && e.code === "rate_limited" ? "已有下載視窗開啟，請稍候再試。" : "無法下載檔案，請改用「複製全部」。", "error");
+      })
+      .then(function () { btn.disabled = false; });
+  }
+  function flash(btn, msg) {
+    var old = btn.textContent; btn.textContent = msg;
+    setTimeout(function () { btn.textContent = old; }, 1500);
+  }
+  function copyText(text, btn) {
+    try {
+      navigator.clipboard.writeText(text).then(function () { flash(btn, "已複製"); }, function () { fallbackCopy(text, btn); });
+    } catch (e) { fallbackCopy(text, btn); }
+  }
+  function fallbackCopy(text, btn) {
+    var it = items.find(function (i) { return i.textarea && i.textarea.value === text; });
+    if (it) { it.textarea.focus(); it.textarea.select(); flash(btn, "已選取，請按複製"); }
+    else showNotice("無法自動複製，請在文字框中選取後手動複製。", "error");
+  }
+
+  $("copyAll").addEventListener("click", function () { copyText(asTxt(), $("copyAll")); });
+  $("dlTxt").addEventListener("click", function () { save("txt", asTxt(), $("dlTxt")); });
+  $("dlMd").addEventListener("click", function () { save("md", asMd(), $("dlMd")); });
+  $("dlHtml").addEventListener("click", function () { save("html", asHtml(), $("dlHtml")); });
+
+  // ---------- start: show a marked example until the viewer adds an image ----------
+  items.push({ id: ++seq, name: "範例圖片.png", url: SAMPLE_IMG, blob: null, text: SAMPLE_TEXT, status: "example", error: "" });
+  render();
+
+  if (window.claude && window.claude.use) {
+    window.claude.use("sample").then(function (s) {
+      sample = s;
+      if (!s) { ready = true; showNotice("在 claude.ai 開啟此頁面才能辨識圖片；目前只顯示範例。"); return null; }
+      return s.limits().then(function (l) { imgLimits = l && l.images ? l.images : null; }, function () { imgLimits = null; })
+        .then(function () { ready = true; });
+    });
+    window.claude.use("downloads").then(function (d) { downloads = d; });
+  } else {
+    ready = true;
+    showNotice("在 claude.ai 開啟此頁面才能辨識圖片；目前只顯示範例。");
+  }
+})();
+</script>

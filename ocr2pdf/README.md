@@ -37,3 +37,9 @@ python ocr2pdf.py 資料夾/ -o 結果.html --embed-images  # HTML 內附原圖�
 HTML 為單一檔案，可直接用瀏覽器開啟；每段文字有「複製文字」按鈕，支援深色模式，也可列印。只輸出 HTML 時不需要 fpdf2 與中文字型。
 
 **提高辨識率：** 圖片盡量清晰、正面拍攝、光線均勻；程式已會自動轉灰階、增強對比並放大小圖。
+
+## 網頁版（Claude Artifact）
+
+`artifact/ocr-tool.html` 是同功能的網頁版，發布在 claude.ai 上執行：上傳、拖放或貼上圖片，由 Claude 辨識文字（中文辨識比 Tesseract 準確），可直接編輯、複製，並下載成 HTML、TXT 或 Markdown。不需安裝任何東西，辨識會使用開啟者自己的 Claude 用量。
+
+`ocr-tool.src.html` 是原始碼，`ocr-tool.html` 是嵌入範例圖片後實際發布的檔案。
