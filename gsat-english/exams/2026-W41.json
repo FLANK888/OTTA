@@ -1,0 +1,456 @@
+{
+  "id": "2026-W41",
+  "date": "2026-10-10",
+  "title": "116 學測英文模擬卷 第 1 回",
+  "topics": [
+    "城市頂樓養蜂",
+    "新老師融入漁村",
+    "馬祖藍眼淚與生物發光",
+    "拖延症與情緒管理",
+    "總觀效應（太空人看地球）",
+    "醜蔬果與食物浪費",
+    "耳蟲（歌曲卡在腦中）",
+    "竹子建築",
+    "偏鄉志工",
+    "無手機日"
+  ],
+  "vocabulary": [
+    {
+      "n": 1,
+      "stem": "After weeks of heavy rain, the farmers were relieved when the weather finally became ________ enough for them to harvest their rice.",
+      "options": ["fragile", "vacant", "stable", "hollow"],
+      "answer": "C",
+      "explanation": "stable 穩定的。連下數週大雨後天氣終於「穩定」，農夫才能收割。fragile 易碎的；vacant 空著的；hollow 中空的。"
+    },
+    {
+      "n": 2,
+      "stem": "The new library is ________ to everyone in the community; you don't even need a membership card to read there.",
+      "options": ["accountable", "accessible", "adorable", "acceptable"],
+      "answer": "B",
+      "explanation": "be accessible to sb. 對某人開放、可使用。後句「不需要會員卡」呼應人人都能使用。accountable 須負責的；adorable 可愛的；acceptable 可接受的。"
+    },
+    {
+      "n": 3,
+      "stem": "Jenny's ________ to detail makes her an excellent editor; she rarely misses even the smallest spelling mistake.",
+      "options": ["tension", "intention", "extension", "attention"],
+      "answer": "D",
+      "explanation": "attention to detail 注重細節，為固定搭配。tension 緊張；intention 意圖；extension 延長。"
+    },
+    {
+      "n": 4,
+      "stem": "The two countries finally signed a peace ________, ending a conflict that had lasted for nearly a decade.",
+      "options": ["treaty", "tribute", "trophy", "triumph"],
+      "answer": "A",
+      "explanation": "sign a peace treaty 簽署和平條約。tribute 致敬；trophy 獎盃；triumph 勝利。"
+    },
+    {
+      "n": 5,
+      "stem": "Because the instructions were so ________, many students were confused about what they were supposed to do.",
+      "options": ["abundant", "adequate", "ambiguous", "accurate"],
+      "answer": "C",
+      "explanation": "ambiguous 模稜兩可的。說明不清楚，學生才會困惑。abundant 豐富的；adequate 足夠的；accurate 準確的。"
+    },
+    {
+      "n": 6,
+      "stem": "The firefighters responded ________ to the emergency call and arrived at the scene within three minutes.",
+      "options": ["vaguely", "casually", "reluctantly", "promptly"],
+      "answer": "D",
+      "explanation": "promptly 迅速地。三分鐘內抵達表示反應迅速。vaguely 模糊地；casually 隨意地；reluctantly 不情願地。"
+    },
+    {
+      "n": 7,
+      "stem": "Years of drought have caused the lake to ________ to half its original size.",
+      "options": ["swell", "shrink", "bloom", "flee"],
+      "answer": "B",
+      "explanation": "shrink 縮小。乾旱使湖泊縮小到原本的一半。swell 腫脹、增大；bloom 開花；flee 逃離。"
+    },
+    {
+      "n": 8,
+      "stem": "The doctor warned that the medicine might cause ________ effects such as dizziness and nausea, so patients should not drive after taking it.",
+      "options": ["adverse", "vivid", "sincere", "loyal"],
+      "answer": "A",
+      "explanation": "adverse effects 不良反應、副作用。頭暈、噁心都是不良反應。vivid 生動的；sincere 真誠的；loyal 忠誠的。"
+    },
+    {
+      "n": 9,
+      "stem": "To ________ the spread of the flu, the school asked students with fevers to stay home.",
+      "options": ["obtain", "retain", "contain", "sustain"],
+      "answer": "C",
+      "explanation": "contain the spread 遏止擴散。obtain 獲得；retain 保留；sustain 維持。"
+    },
+    {
+      "n": 10,
+      "stem": "Although the novel was written over a century ago, its themes of love and loss remain ________ to readers today.",
+      "options": ["reluctant", "redundant", "remote", "relevant"],
+      "answer": "D",
+      "explanation": "relevant to sb. 與某人切身相關。雖是百年前的小說，主題對現代讀者仍有意義。reluctant 不情願的；redundant 多餘的；remote 遙遠的。"
+    }
+  ],
+  "cloze": [
+    {
+      "passage": "In recent years, a growing number of city dwellers have taken up an unusual hobby: keeping bees on rooftops. At first glance, a busy city may seem like the last place __11__ bees could thrive. However, urban areas often offer a wider variety of flowers than farmland, much of which is __12__ to a single crop. Parks, gardens, and even balcony plants provide bees with a steady __13__ of food from early spring to late autumn.\n\nSupporters of urban beekeeping argue that the hobby helps people reconnect with nature. __14__, some scientists warn that adding too many honeybees to a city may harm wild bees, which compete with them for the same limited amount of nectar. They suggest that people who want to help pollinators should plant native flowers __15__ simply setting up more hives.",
+      "questions": [
+        {
+          "n": 11,
+          "options": ["where", "which", "what", "whose"],
+          "answer": "A",
+          "explanation": "先行詞 the last place，關係子句 bees could thrive 結構完整，缺的是地方副詞，用關係副詞 where。"
+        },
+        {
+          "n": 12,
+          "options": ["attached", "exposed", "devoted", "addicted"],
+          "answer": "C",
+          "explanation": "be devoted to 專用於。農地多半只種單一作物，所以花的種類較少。be attached to 依戀；be exposed to 暴露於；be addicted to 沉迷於。"
+        },
+        {
+          "n": 13,
+          "options": ["display", "reward", "demand", "supply"],
+          "answer": "D",
+          "explanation": "a steady supply of food 穩定的食物來源。display 展示；reward 獎賞；demand 需求。"
+        },
+        {
+          "n": 14,
+          "options": ["Likewise", "Therefore", "For instance", "Nevertheless"],
+          "answer": "D",
+          "explanation": "前句講支持者的看法，後句講科學家的警告，語意轉折，用 Nevertheless（然而）。"
+        },
+        {
+          "n": 15,
+          "options": ["as well as", "rather than", "in addition to", "as a result of"],
+          "answer": "B",
+          "explanation": "科學家建議「種原生植物，而不是只多設蜂箱」，用 rather than（而非）。as well as 和 in addition to 都表示「以及」，語意相反。"
+        }
+      ]
+    },
+    {
+      "passage": "When Maya moved to a small fishing village for her first teaching job, she was __16__ about fitting in. The villagers were polite but reserved, and for weeks she ate lunch alone. Then one morning, a storm knocked out the power in the entire village. With no electricity, the school had to close, and Maya __17__ herself with nothing to do. She wandered down to the harbor, where a group of fishermen were struggling to repair a torn net before the next tide.\n\nWithout __18__, she rolled up her sleeves and joined them. Her knots were clumsy at first, but an old fisherman patiently showed her how to tie them properly. By sunset, the net was mended, and Maya had been invited to dinner at three different homes. Looking back, she realized that what had __19__ the ice was not her teaching skills but her willingness to __20__ a hand when it was needed.",
+      "questions": [
+        {
+          "n": 16,
+          "options": ["curious", "generous", "anxious", "furious"],
+          "answer": "C",
+          "explanation": "be anxious about 對……感到焦慮。初到陌生村子，擔心無法融入。curious 好奇的；generous 慷慨的；furious 憤怒的。"
+        },
+        {
+          "n": 17,
+          "options": ["made", "kept", "left", "found"],
+          "answer": "D",
+          "explanation": "find oneself + 狀態：發現自己處於某種情況。學校停課，她發現自己無事可做。"
+        },
+        {
+          "n": 18,
+          "options": ["hesitation", "permission", "exception", "explanation"],
+          "answer": "A",
+          "explanation": "without hesitation 毫不猶豫地。rolled up her sleeves 捲起袖子，表示立刻動手。"
+        },
+        {
+          "n": 19,
+          "options": ["melted", "broken", "cracked", "frozen"],
+          "answer": "B",
+          "explanation": "break the ice 打破僵局，為固定慣用語。"
+        },
+        {
+          "n": 20,
+          "options": ["shake", "take", "hold", "lend"],
+          "answer": "D",
+          "explanation": "lend a hand 幫忙，為固定慣用語。shake hands 是握手，意思不同。"
+        }
+      ]
+    }
+  ],
+  "fill": {
+    "passage": "On certain summer nights, the waves along the coast of Taiwan's Matsu Islands glow an eerie blue. Locals call this __21__ the 'Blue Tears.' The light is produced by tiny marine organisms called dinoflagellates, which give off a flash whenever they are __22__ by moving water. This ability to create light, known as bioluminescence, is far more __23__ than most people realize. Scientists estimate that around three-quarters of the animals living in the deep sea can produce light of some kind.\n\nWhy would a living creature spend precious energy making light? The answers __24__ from species to species. Some animals use light to __25__ prey. The anglerfish, for example, dangles a glowing lure in front of its mouth; small fish that swim closer to investigate are quickly swallowed. Others use light for __26__. Certain squid produce a soft glow on their undersides that matches the faint sunlight coming from above, making their shadows nearly invisible to predators below. Light can also serve as a form of __27__. Fireflies flash in patterns unique to their species so that they can recognize and attract suitable mates.\n\nFor visitors, the Blue Tears are a(n) __28__ sight, and tourism in Matsu has grown rapidly as a result. However, experts warn that bright artificial lights and water pollution may __29__ the delicate ecosystem that makes the display possible. If the glowing waves are to __30__ for future generations, both tourists and local authorities will need to treat this natural wonder with care.",
+    "options": {
+      "A": "survive",
+      "B": "common",
+      "C": "disguise",
+      "D": "phenomenon",
+      "E": "threaten",
+      "F": "attract",
+      "G": "unforgettable",
+      "H": "vary",
+      "I": "disturbed",
+      "J": "communication"
+    },
+    "answers": {
+      "21": "D",
+      "22": "I",
+      "23": "B",
+      "24": "H",
+      "25": "F",
+      "26": "C",
+      "27": "J",
+      "28": "G",
+      "29": "E",
+      "30": "A"
+    },
+    "explanations": {
+      "21": "this 後接單數可數名詞，指「這種現象」，選 phenomenon。",
+      "22": "be 動詞後接過去分詞形成被動：浮游生物「被」水流擾動時發光，選 disturbed。",
+      "23": "far more ___ than 需要形容詞比較級；後句說四分之三深海動物會發光，表示這種能力很「常見」，選 common。",
+      "24": "主詞 The answers 是複數，後面需要不及物動詞；vary from A to B 因……而異，選 vary。",
+      "25": "use light to + 原形動詞；鮟鱇魚用發光誘餌「吸引」獵物，選 attract。",
+      "26": "for 後接名詞；烏賊腹部發光讓影子消失，是一種「偽裝」，選 disguise。",
+      "27": "a form of + 名詞；螢火蟲用閃光辨認同類、吸引配偶，是「溝通」，選 communication。",
+      "28": "a(n) ___ sight 需要形容詞，且以母音開頭（an），選 unforgettable（難忘的）。",
+      "29": "助動詞 may + 原形動詞；光害與污染可能「威脅」生態，選 threaten。",
+      "30": "be to + 原形動詞表示「若要……」；若要讓藍眼淚「存續」到後代，選 survive。"
+    }
+  },
+  "structure": {
+    "passage": "Almost everyone has put off an important task at some point, only to regret it later. Procrastination is often blamed on laziness or poor time management. __31__ According to psychologist Tim Pychyl, people delay tasks mainly because those tasks make them feel bad—bored, anxious, or insecure. By avoiding the task, they get short-term relief from these unpleasant emotions.\n\n__32__ Each time we escape a difficult assignment by checking our phones, our brains learn that avoidance leads to an immediate reward. Over time, delaying becomes a habit that is hard to break. Meanwhile, the deadline does not go away, and the stress we tried to escape eventually returns, often stronger than before.\n\nSo how can we break the cycle? One effective strategy is to make the first step as small as possible. __33__ Once we have started, continuing usually feels much easier than we expected. Another strategy is to treat ourselves with kindness rather than criticism. __34__ In fact, one study found that students who forgave themselves for procrastinating before one exam were less likely to procrastinate before the next one.",
+    "options": {
+      "A": "Instead of telling ourselves to \"write the report,\" we might decide to write just one sentence.",
+      "B": "Researchers, however, increasingly view it as a problem of managing emotions rather than time.",
+      "C": "Unfortunately, this relief comes at a cost.",
+      "D": "Blaming ourselves for past delays only adds to the negative feelings that caused the problem in the first place."
+    },
+    "answers": {
+      "31": "B",
+      "32": "C",
+      "33": "A",
+      "34": "D"
+    },
+    "explanations": {
+      "31": "前句說一般人歸咎於懶惰或時間管理，後句引用心理學家說法提出不同觀點，(B) 的 however 正好轉折，並點出「情緒」這個關鍵。",
+      "32": "上段結尾提到 short-term relief，(C) 的 this relief 承接上文，並引出本段「逃避的代價」。",
+      "33": "前句說第一步要盡量小，(A) 舉例：不要想「寫報告」，只要寫一句話。",
+      "34": "前句說要善待自己而非批評，(D) 說明自責只會加重負面情緒，後句再以研究佐證。"
+    }
+  },
+  "reading": [
+    {
+      "passage": "In 1968, the crew of Apollo 8 became the first humans to see Earth as a whole planet hanging in the blackness of space. One of the astronauts, William Anders, snapped a photo of Earth rising above the Moon's gray horizon. The image, later named Earthrise, is often credited with helping to inspire the modern environmental movement. \"We came all this way to explore the Moon,\" Anders later said, \"and the most important thing is that we discovered the Earth.\"\n\nAnders was not alone in being deeply moved by the view. Many astronauts have described a sudden shift in awareness upon seeing Earth from orbit. The planet appears small, fragile, and strikingly beautiful, protected only by a paper-thin layer of atmosphere. National borders, so important on the ground, are invisible from above. In 1987, writer Frank White coined the term \"the overview effect\" to describe this experience, which he based on interviews with dozens of astronauts.\n\nWhat exactly causes the overview effect remains unclear. Some researchers believe it is a form of awe—an emotion we feel when facing something so vast that it challenges our understanding of the world. Studies on awe suggest that it can make people feel less focused on themselves and more connected to others. Astronauts often return home with a stronger desire to protect the environment and promote cooperation among nations.\n\nOf course, few of us will ever travel to space. However, some scientists are exploring whether virtual reality can recreate a version of the overview effect. Early experiments show that viewing Earth in VR can produce feelings of awe, although the effect appears weaker and shorter-lived than the real experience. Still, if a few minutes with a headset can make people care a little more about their planet, the technology may be worth exploring.",
+      "questions": [
+        {
+          "n": 35,
+          "stem": "What is the passage mainly about?",
+          "options": [
+            "The history of the Apollo space program.",
+            "A powerful experience reported by people who have seen Earth from space.",
+            "The reasons why astronauts join environmental groups.",
+            "How virtual reality is used to train astronauts."
+          ],
+          "answer": "B",
+          "explanation": "全文圍繞「總觀效應」：太空人從太空看地球時的強烈感受、可能成因與 VR 重現的嘗試。(A) 只是開頭的背景；(C)(D) 文中未提。"
+        },
+        {
+          "n": 36,
+          "stem": "According to the passage, which of the following is true about the photo Earthrise?",
+          "options": [
+            "It was taken by Frank White in 1987.",
+            "It showed the Moon rising above Earth's horizon.",
+            "It is believed to have helped inspire the environmental movement.",
+            "It was the first photograph ever taken in space."
+          ],
+          "answer": "C",
+          "explanation": "第一段：is often credited with helping to inspire the modern environmental movement。照片是 Anders 拍的，畫面是地球從月球地平線升起，並非太空中第一張照片。"
+        },
+        {
+          "n": 37,
+          "stem": "What does the word \"coined\" in the second paragraph most likely mean?",
+          "options": ["Invented.", "Questioned.", "Borrowed.", "Translated."],
+          "answer": "A",
+          "explanation": "coin a term 創造新詞。Frank White 根據訪談「創造」了 the overview effect 這個詞。"
+        },
+        {
+          "n": 38,
+          "stem": "Which of the following can be inferred from the last paragraph?",
+          "options": [
+            "VR has replaced space travel in research on awe.",
+            "The overview effect produced by VR is as strong as the real one.",
+            "The author is cautiously hopeful about the use of VR.",
+            "Most scientists believe VR research is a waste of money."
+          ],
+          "answer": "C",
+          "explanation": "作者承認 VR 效果較弱、較短暫，但仍說 may be worth exploring，屬於謹慎的樂觀。(B) 與 weaker and shorter-lived 矛盾。"
+        }
+      ]
+    },
+    {
+      "passage": "Every year, a huge amount of fruit and vegetables is thrown away before it ever reaches a supermarket shelf. The reason is not that the food is spoiled or unsafe to eat, but that it does not look \"right.\" Carrots with two legs, apples with small scars, and potatoes in odd shapes are often rejected because retailers believe shoppers will not buy them. According to some estimates, a significant share of the produce grown on farms is wasted partly because of such strict cosmetic standards.\n\nIn 2014, the French supermarket chain Intermarché decided to challenge this practice. It launched a campaign called \"Inglorious Fruits and Vegetables,\" selling misshapen produce at a 30% discount. Colorful posters featured a \"grotesque apple\" and a \"ridiculous potato,\" along with the message that they were just as good as other produce. The campaign was a surprising success: the items sold out quickly, and overall store traffic increased.\n\nSince then, similar efforts have spread around the world. Some companies deliver boxes of \"ugly\" produce directly to customers' homes, while restaurants have begun turning imperfect vegetables into soups and sauces, where appearance does not matter at all. Supporters say these programs not only reduce waste but also give farmers extra income from crops they would otherwise have to plow back into the soil.\n\nCritics, however, point out that the problem is more complicated than it seems. Some argue that selling cheap \"ugly\" produce may simply take customers away from regular produce rather than reduce overall waste. Others note that the largest share of food waste actually happens in households, where people buy more than they need and throw away leftovers. For these critics, changing what we buy is only half the solution; changing how much we waste at home matters just as much.",
+      "questions": [
+        {
+          "n": 39,
+          "stem": "Why are many fruits and vegetables thrown away before they reach stores?",
+          "options": [
+            "They are not safe to eat.",
+            "They do not meet appearance standards.",
+            "Farmers grow more than stores can sell.",
+            "They spoil during transportation."
+          ],
+          "answer": "B",
+          "explanation": "第一段：not that the food is spoiled or unsafe…but that it does not look \"right\"，並提到 strict cosmetic standards（外觀標準）。"
+        },
+        {
+          "n": 40,
+          "stem": "What can we learn about Intermarché's campaign?",
+          "options": [
+            "It sold misshapen produce at the same price as regular produce.",
+            "It failed to attract customers at first.",
+            "It used humor to change shoppers' attitudes toward imperfect produce.",
+            "It was organized by a group of French farmers."
+          ],
+          "answer": "C",
+          "explanation": "海報用「怪誕的蘋果」「可笑的馬鈴薯」這類幽默標語，改變消費者觀感。商品打七折，(A) 錯；活動一推出就賣光，(B) 錯；主辦者是超市，(D) 錯。"
+        },
+        {
+          "n": 41,
+          "stem": "Which of the following is NOT mentioned as a way to make use of \"ugly\" produce?",
+          "options": [
+            "Donating it to food banks.",
+            "Delivering it to people's homes.",
+            "Using it in restaurant dishes.",
+            "Selling it at a discount."
+          ],
+          "answer": "A",
+          "explanation": "文中提到折價販售（第二段）、宅配到府與餐廳做成湯和醬汁（第三段），沒有提到捐給食物銀行。"
+        },
+        {
+          "n": 42,
+          "stem": "What is the main point of the critics in the last paragraph?",
+          "options": [
+            "Ugly produce is less nutritious than regular produce.",
+            "Supermarkets should stop selling discounted produce.",
+            "Farmers earn too little from imperfect crops.",
+            "Reducing food waste also requires changes in how people behave at home."
+          ],
+          "answer": "D",
+          "explanation": "最後一句：changing how much we waste at home matters just as much，批評者認為家庭的浪費習慣也必須改變。"
+        }
+      ]
+    },
+    {
+      "passage": "Have you ever had a song play over and over in your head, even though you did not want to hear it? If so, you have experienced what scientists call involuntary musical imagery—more commonly known as an \"earworm.\" The word comes from the German Ohrwurm. Surveys suggest that around 90 percent of people experience earworms at least once a week.\n\nEarworms tend to share certain features. Researchers at Durham University in the UK analyzed songs that people most often reported as getting stuck in their heads. They found that these songs usually had a fairly fast tempo and a simple, easy-to-remember melody, but also contained some unusual intervals or repetitions that made them stand out. In other words, a catchy tune is both familiar and slightly surprising.\n\nOur daily situations also play a role. Earworms often appear when we are doing tasks that require little attention, such as walking, showering, or doing household chores. Recent and repeated exposure to a song makes it more likely to return, and so does stress. A memory can serve as a trigger as well: seeing a person or place connected with a song may be enough to start it playing in our mind.\n\nFor most people, earworms are harmless and fade away on their own. But for those who find them annoying, scientists have a few suggestions. One study found that chewing gum reduced the number of earworms, perhaps because chewing interferes with the \"inner voice\" we use to rehearse music. Another tip is to listen to the song all the way through, since an unfinished tune tends to stay in our mind longer. Some people also find that solving a moderately difficult puzzle, such as a sudoku, keeps the mind busy enough to push the song out.",
+      "questions": [
+        {
+          "n": 43,
+          "stem": "Which of the following is the best title for the passage?",
+          "options": [
+            "How to Write a Hit Song",
+            "The German Origins of Pop Music",
+            "Music as a Cure for Stress",
+            "Why Songs Get Stuck in Our Heads"
+          ],
+          "answer": "D",
+          "explanation": "全文介紹耳蟲的定義、容易成為耳蟲的歌曲特徵、出現情境與擺脫方法。"
+        },
+        {
+          "n": 44,
+          "stem": "According to the Durham University study, which song is most likely to become an earworm?",
+          "options": [
+            "A slow song with a complicated melody.",
+            "A fast song with a simple melody and a few unexpected notes.",
+            "A song the listener has never heard before.",
+            "A song with long, unpredictable lyrics."
+          ],
+          "answer": "B",
+          "explanation": "第二段：fairly fast tempo、simple melody，加上 unusual intervals（意料之外的音程），也就是「熟悉又帶點意外」。"
+        },
+        {
+          "n": 45,
+          "stem": "In which situation is a person most likely to experience an earworm?",
+          "options": [
+            "While taking a difficult math test.",
+            "While having a serious discussion with friends.",
+            "While folding laundry after hearing a song several times.",
+            "While reading a challenging novel in a quiet library."
+          ],
+          "answer": "C",
+          "explanation": "第三段：耳蟲常在不太需要專注的事情時出現（如做家事），且最近重複聽過的歌更容易出現。摺衣服符合這兩點，其他選項都需要高度專注。"
+        },
+        {
+          "n": 46,
+          "stem": "Why might chewing gum help reduce earworms?",
+          "options": [
+            "It makes people feel less stressed.",
+            "It disturbs the mental process used to rehearse music.",
+            "It distracts people's attention from their surroundings.",
+            "It helps people finish songs more quickly."
+          ],
+          "answer": "B",
+          "explanation": "第四段：chewing interferes with the \"inner voice\" we use to rehearse music，咀嚼會干擾在腦中默唱的「內在聲音」。"
+        }
+      ]
+    }
+  ],
+  "mixed": {
+    "passage": "Bamboo has been used for building in Asia for thousands of years, but it is now attracting attention from architects around the world. Some even call it \"green steel.\" What makes this giant grass so special?\n\nFirst, bamboo grows remarkably fast. Certain species can grow up to 90 centimeters in a single day, and most reach full size within three to five years. In comparison, the trees used for timber often need 20 to 50 years before they can be harvested. Moreover, because bamboo regrows from its roots, it does not need to be replanted after it is cut.\n\nSecond, bamboo is surprisingly strong. Its tensile strength—its ability to resist being pulled apart—can rival that of some kinds of steel, while it is far lighter. This combination of strength and flexibility helps bamboo structures survive earthquakes, since they bend rather than break when the ground shakes.\n\nHowever, bamboo also has its weaknesses. Untreated bamboo is easily attacked by insects and fungi, and it may rot within a few years if it is exposed to rain. Builders must therefore treat it with chemicals such as boron and design roofs that keep it dry. In addition, because each bamboo pole varies in size and shape, it is harder to standardize than steel or concrete, which makes many engineers reluctant to use it in large buildings.\n\nDespite these challenges, projects such as the Green School in Bali, Indonesia, show what bamboo can do. The school's main building, made almost entirely of bamboo, has become a symbol of sustainable design and attracts visitors from all over the world.",
+    "table": {
+      "caption": "Bamboo as a Building Material",
+      "headers": ["Advantages", "Disadvantages"],
+      "rows": [
+        ["Grows fast; does not need to be __47__ after it is cut", "May rot if exposed to __48__ without treatment"],
+        ["Strong, light, and flexible", "Hard to standardize because poles vary in size and shape"]
+      ]
+    },
+    "questions": [
+      {
+        "n": 47,
+        "type": "fill",
+        "points": 2,
+        "prompt": "請從文章中找出最適當的一個英文單詞填入表格 (47)，並視語法需要作適當的字形變化。",
+        "accepted": ["replanted"],
+        "explanation": "第二段：it does not need to be replanted after it is cut。need to be + 過去分詞，答案為 replanted。"
+      },
+      {
+        "n": 48,
+        "type": "fill",
+        "points": 2,
+        "prompt": "請從文章中找出最適當的一個英文單詞填入表格 (48)。",
+        "accepted": ["rain"],
+        "explanation": "第四段：it may rot within a few years if it is exposed to rain。"
+      },
+      {
+        "n": 49,
+        "type": "multi",
+        "points": 2,
+        "stem": "Which of the following statements are true according to the passage? (Choose all that apply.)",
+        "options": {
+          "A": "Bamboo is a kind of grass.",
+          "B": "Timber trees can be harvested sooner than bamboo.",
+          "C": "Bamboo is lighter than steel.",
+          "D": "Most engineers prefer bamboo for large buildings.",
+          "E": "The Green School is located in Indonesia."
+        },
+        "answer": ["A", "C", "E"],
+        "explanation": "(A) 第一段 this giant grass；(C) 第三段 far lighter；(E) 末段 Bali, Indonesia。(B) 木材樹需 20–50 年，竹子 3–5 年，敘述相反；(D) 工程師 reluctant to use it，敘述相反。"
+      },
+      {
+        "n": 50,
+        "type": "short",
+        "points": 4,
+        "stem": "Why are many engineers reluctant to use bamboo in large buildings? Answer in a complete English sentence.",
+        "reference": "Because each bamboo pole varies in size and shape, bamboo is harder to standardize than steel or concrete.",
+        "explanation": "要點：竹竿大小形狀不一（varies in size and shape）＋難以標準化（hard to standardize）。兩個要點各 2 分；只照抄原文片段而句子不完整，酌扣 1 分。"
+      }
+    ]
+  },
+  "translation": [
+    {
+      "n": 1,
+      "points": 4,
+      "zh": "近年來，越來越多年輕人選擇利用假期到偏鄉擔任志工。",
+      "reference": [
+        "In recent years, more and more young people have chosen to spend their vacations volunteering in remote areas.",
+        "In recent years, an increasing number of young people have chosen to serve as volunteers in rural areas during their holidays."
+      ],
+      "explanation": "「近年來」配現在完成式 have chosen；spend + 時間 + V-ing；偏鄉可用 remote areas 或 rural areas。"
+    },
+    {
+      "n": 2,
+      "points": 4,
+      "zh": "他們發現，幫助別人不僅能豐富自己的生活，也能讓他們更了解社會的需求。",
+      "reference": [
+        "They find that helping others can not only enrich their own lives but also help them better understand the needs of society.",
+        "They discover that helping others not only enriches their lives but also gives them a better understanding of what society needs."
+      ],
+      "explanation": "動名詞 helping others 當主詞；not only…but also… 連接兩個對等的動詞片語；help sb. (to) V。"
+    }
+  ],
+  "writing": {
+    "points": 20,
+    "prompt": "假設你的學校打算推行「無手機日」（No-Phone Day），每週選定一天，全校師生在校內都不得使用手機。請寫一篇英文作文，文分兩段。第一段說明你是否贊成這項政策及理由；第二段說明若這項政策實施，你會如何善用這一天，並解釋原因。",
+    "reference": "In my opinion, a weekly No-Phone Day is a good idea. Nowadays, many students check their phones during every break, scrolling through social media instead of talking to the classmates sitting right next to them. Spending one day a week without phones would give us a chance to rest our eyes and minds and to rediscover face-to-face communication. Although some people worry that students might miss important messages, the school office can still contact parents in an emergency, so the inconvenience would be small.\n\nIf the policy were carried out, I would make the most of the day by reading and playing sports. During breaks, I would borrow a novel from the library, something I seldom do because my phone usually eats up my free time. After school, I would invite my friends to play basketball instead of playing mobile games alone. I believe these activities would not only help me relax but also strengthen my friendships. In this way, No-Phone Day could become the day I look forward to most each week."
+  }
+}

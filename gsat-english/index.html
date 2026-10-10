@@ -1,0 +1,534 @@
+<!doctype html>
+<title>學測英文週考</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;800&family=Noto+Sans+TC:wght@400;500;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: one exam-paper column; a sticky bar holds the timer and section jumps; answers are marked on answer-card bubbles. */
+:root {
+  --paper: #fbfbf8;
+  --sheet: #ffffff;
+  --ink: #1d2128;
+  --graphite: #5d6470;
+  --rule: #dcdfe3;
+  --card: #c2413a;          /* answer-card red */
+  --card-wash: #fbeceb;
+  --fill: #23272f;          /* pencil mark */
+  --good: #227a4b;
+  --good-wash: #e5f3ea;
+  --bad: #b3261e;
+  --bad-wash: #fbe7e5;
+  --note: #f3f4f1;
+  --f-display: "Noto Serif TC", "Songti TC", "PMingLiU", serif;
+  --f-text: "Source Serif 4", "Noto Serif TC", Georgia, serif;
+  --f-ui: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #15171b; --sheet: #1c1f24; --ink: #e7e8ea; --graphite: #a2a8b2; --rule: #343840;
+    --card: #ec7a72; --card-wash: #3a2422; --fill: #eef0f3;
+    --good: #6cc995; --good-wash: #1d3328; --bad: #f08a83; --bad-wash: #3d2220; --note: #23262c;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #15171b; --sheet: #1c1f24; --ink: #e7e8ea; --graphite: #a2a8b2; --rule: #343840;
+  --card: #ec7a72; --card-wash: #3a2422; --fill: #eef0f3;
+  --good: #6cc995; --good-wash: #1d3328; --bad: #f08a83; --bad-wash: #3d2220; --note: #23262c;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 15px/1.6 var(--f-ui); }
+button, select, input, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--card); outline-offset: 2px; }
+
+.wrap { max-width: 780px; margin: 0 auto; padding-inline: 16px; }
+
+/* Masthead */
+header.mast { padding-block: 28px 18px; display: grid; gap: 14px; }
+.eyebrow { font-size: 12px; letter-spacing: .14em; color: var(--card); font-weight: 700; }
+h1 { font: 800 clamp(26px, 6vw, 38px)/1.2 var(--f-display); margin: 0; text-wrap: balance; }
+.meta { display: flex; flex-wrap: wrap; gap: 8px 18px; color: var(--graphite); font-size: 13px; }
+.meta b { color: var(--ink); font-weight: 500; }
+.picker { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.picker label { font-size: 13px; color: var(--graphite); }
+select { background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px; padding: 6px 10px; max-width: 100%; }
+.topics { display: flex; flex-wrap: wrap; gap: 6px; }
+.topics span { font-size: 12px; padding: 2px 8px; border: 1px solid var(--rule); border-radius: 999px; color: var(--graphite); }
+
+/* Sticky bar */
+.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--paper); border-bottom: 1px solid var(--rule); }
+.bar .wrap { display: flex; align-items: center; gap: 10px; padding-block: 8px; flex-wrap: wrap; }
+.jumps { display: flex; gap: 4px; overflow-x: auto; flex: 1 1 260px; min-width: 0; scrollbar-width: none; }
+.jumps a { white-space: nowrap; font-size: 13px; text-decoration: none; color: var(--graphite); padding: 4px 8px; border-radius: 6px; }
+.jumps a:hover { background: var(--note); color: var(--ink); }
+.clock { font: 500 15px var(--f-mono); font-variant-numeric: tabular-nums; min-width: 4.5em; text-align: right; }
+.clock.low { color: var(--bad); }
+.btn { border: 1px solid var(--rule); background: var(--sheet); border-radius: 6px; padding: 5px 12px; cursor: pointer; font-size: 14px; }
+.btn:hover { border-color: var(--graphite); }
+.btn.primary { background: var(--card); border-color: var(--card); color: var(--sheet); font-weight: 700; }
+.btn.primary.arm { background: var(--bad); border-color: var(--bad); }
+
+/* Paper */
+main { padding-block: 8px 80px; }
+.part { margin-top: 36px; }
+.part > h2 { font: 800 20px/1.3 var(--f-display); margin: 0; padding-bottom: 6px; border-bottom: 2px solid var(--ink); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.part > h2 small { font: 400 13px var(--f-ui); color: var(--graphite); align-self: end; }
+.sec { margin-top: 26px; }
+.sec > h3 { font: 700 16px var(--f-ui); margin: 0 0 4px; }
+.direction { font-size: 13px; color: var(--graphite); margin: 0 0 14px; }
+.passage { font: 400 17px/1.75 var(--f-text); background: var(--sheet); border: 1px solid var(--rule); border-radius: 4px; padding: 18px 20px; max-width: 68ch; }
+.passage p { margin: 0 0 .9em; text-indent: 1.5em; }
+.passage p:last-child { margin-bottom: 0; }
+.blank { display: inline-block; min-width: 3.2em; text-align: center; border-bottom: 1.5px solid var(--ink); font: 600 13px var(--f-mono); color: var(--card); text-indent: 0; padding: 0 2px; }
+.blank.ok { color: var(--good); border-color: var(--good); }
+.blank.no { color: var(--bad); border-color: var(--bad); }
+.optbox { margin: 14px 0; padding: 12px 16px; border: 1px dashed var(--graphite); border-radius: 4px; font: 16px/1.6 var(--f-text); display: grid; gap: 4px 18px; }
+.optbox.words { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+.optbox b { font: 600 13px var(--f-mono); color: var(--card); margin-right: 6px; }
+
+.q { display: grid; grid-template-columns: 2.2em minmax(0, 1fr); gap: 4px 6px; padding: 12px 0; border-bottom: 1px solid var(--rule); }
+.q:last-child { border-bottom: 0; }
+.qn { font: 600 14px/1.9 var(--f-mono); color: var(--card); }
+.stem { font: 16px/1.65 var(--f-text); margin: 0 0 8px; }
+.opts { display: grid; gap: 6px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 170px), 1fr)); }
+.opts.long { grid-template-columns: minmax(0, 1fr); }
+.opt { display: flex; gap: 10px; align-items: flex-start; text-align: left; background: transparent; border: 1px solid transparent; border-radius: 6px; padding: 5px 8px; cursor: pointer; font: 16px/1.5 var(--f-text); }
+.opt:hover { border-color: var(--rule); background: var(--sheet); }
+.bub { flex: none; width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid var(--card); color: var(--card); display: inline-grid; place-items: center; font: 600 12px var(--f-mono); background: var(--sheet); }
+.opt.sel .bub, .bubrow .bub.sel { background: var(--fill); border-color: var(--fill); color: var(--sheet); }
+.bubrow { display: flex; flex-wrap: wrap; gap: 6px; }
+.bubrow .bub { cursor: pointer; border-width: 1.5px; }
+.done .opt, .done .bubrow .bub { cursor: default; }
+.opt.right { background: var(--good-wash); }
+.opt.right .bub, .bubrow .bub.right { border-color: var(--good); color: var(--good); }
+.opt.right.sel .bub, .bubrow .bub.right.sel { background: var(--good); color: var(--sheet); }
+.opt.wrong { background: var(--bad-wash); }
+.opt.wrong .bub, .bubrow .bub.wrong { background: var(--bad); border-color: var(--bad); color: var(--sheet); }
+.expl { grid-column: 2; font-size: 14px; background: var(--note); border-radius: 4px; padding: 8px 12px; margin-top: 6px; }
+.expl b { font-weight: 700; }
+.verdict { font: 600 12px var(--f-ui); margin-left: 8px; }
+.verdict.ok { color: var(--good); }
+.verdict.no { color: var(--bad); }
+
+table.grid { border-collapse: collapse; width: 100%; font: 15px/1.5 var(--f-text); margin: 14px 0; }
+.tablewrap { overflow-x: auto; }
+table.grid caption { font: 700 14px var(--f-ui); text-align: left; padding-bottom: 6px; }
+table.grid th, table.grid td { border: 1px solid var(--rule); padding: 8px 10px; vertical-align: top; text-align: left; }
+table.grid th { background: var(--note); font: 700 13px var(--f-ui); }
+
+input[type=text], textarea { width: 100%; background: var(--sheet); border: 1px solid var(--rule); border-radius: 4px; padding: 8px 10px; font: 16px/1.6 var(--f-text); }
+textarea { min-height: 7em; resize: vertical; }
+textarea.essay { min-height: 18em; }
+.count { font-size: 12px; color: var(--graphite); text-align: right; font-variant-numeric: tabular-nums; }
+.zh { font: 17px/1.7 var(--f-display); font-weight: 600; margin: 0 0 8px; }
+.prompt { font: 16px/1.75 var(--f-display); font-weight: 600; background: var(--sheet); border: 1px solid var(--rule); border-radius: 4px; padding: 14px 18px; margin: 0 0 10px; }
+.ref { font: 15px/1.7 var(--f-text); }
+.ref p { margin: 0 0 .6em; }
+.self { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 8px; font-size: 13px; }
+.self input { width: 5em; background: var(--sheet); border: 1px solid var(--rule); border-radius: 4px; padding: 4px 6px; font-variant-numeric: tabular-nums; }
+
+/* Score sheet */
+.score { margin-top: 24px; background: var(--sheet); border: 2px solid var(--card); border-radius: 6px; padding: 18px 20px; display: grid; gap: 14px; }
+.score .total { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.score .total strong { font: 800 44px/1 var(--f-display); color: var(--card); font-variant-numeric: tabular-nums; }
+.score .total span { color: var(--graphite); font-size: 14px; }
+.rows { display: grid; gap: 8px; }
+.row { display: grid; grid-template-columns: 7.5em minmax(0, 1fr) 4.5em; gap: 10px; align-items: center; font-size: 14px; }
+.row .track { height: 8px; background: var(--note); border-radius: 4px; overflow: hidden; }
+.row .track i { display: block; height: 100%; background: var(--card); }
+.row .pts { text-align: right; font-variant-numeric: tabular-nums; font-family: var(--f-mono); font-size: 13px; }
+.hint { font-size: 13px; color: var(--graphite); margin: 0; }
+.actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.empty { padding: 60px 0; color: var(--graphite); }
+footer { color: var(--graphite); font-size: 12px; padding-block: 20px 40px; border-top: 1px solid var(--rule); }
+
+@media (max-width: 520px) {
+  .passage { padding: 14px 14px; font-size: 16px; }
+  .row { grid-template-columns: 6em minmax(0, 1fr) 4em; }
+}
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+@media print {
+  .bar, .picker, .actions, .score, .expl, .self, footer { display: none !important; }
+  body { background: #fff; color: #000; }
+  .passage { border: 0; padding: 0; }
+  .part { break-before: auto; }
+}
+</style>
+
+<header class="mast wrap">
+  <div class="eyebrow">學科能力測驗 · 英文考科 · 模擬試題</div>
+  <h1 id="title">學測英文週考</h1>
+  <div class="meta" id="meta"></div>
+  <div class="topics" id="topics"></div>
+  <div class="picker">
+    <label for="examPick">選擇週次</label>
+    <select id="examPick"></select>
+  </div>
+</header>
+
+<div class="bar">
+  <div class="wrap">
+    <nav class="jumps" aria-label="大題">
+      <a href="#s-vocab">詞彙</a><a href="#s-cloze">綜合</a><a href="#s-fill">文意選填</a><a href="#s-struct">篇章</a><a href="#s-read">閱讀</a><a href="#s-mixed">混合題</a><a href="#s-open">非選</a><a href="#s-score">成績</a>
+    </nav>
+    <span class="clock" id="clock" aria-live="off">100:00</span>
+    <button class="btn" id="timerBtn" type="button">開始計時</button>
+    <button class="btn primary" id="submitBtn" type="button">交卷</button>
+  </div>
+</div>
+
+<main class="wrap" id="paper"><p class="empty">載入試卷中…</p></main>
+
+<footer class="wrap">
+  依大考中心 111 學年度起的學測英文題型編製：選擇題 62 分、混合題 10 分、非選擇題 28 分，考試時間 100 分鐘。作答內容只存在這台裝置的瀏覽器裡。
+</footer>
+
+<script src="data/manifest.js"></script>
+<script>
+(function () {
+  "use strict";
+  var LIMIT = 100 * 60;
+  var manifest = window.GSAT_MANIFEST || [];
+  var exam = null, st = null, tick = null;
+  var $ = function (id) { return document.getElementById(id); };
+  var paper = $("paper");
+
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function L(i) { return "ABCDEFGHIJ"[i]; }
+  function load(id) { try { return JSON.parse(localStorage.getItem("gsat:" + id)) || null; } catch (e) { return null; } }
+  function save() { try { localStorage.setItem("gsat:" + exam.id, JSON.stringify(st)); } catch (e) {} }
+  function fresh() { return { a: {}, self: {}, done: false, left: LIMIT, running: false }; }
+
+  function paras(text, marks) {
+    return text.split(/\n\n+/).map(function (p) {
+      return "<p>" + esc(p).replace(/__(\d+)__/g, function (_, n) {
+        var cls = marks && marks[n] ? " " + marks[n] : "";
+        return '<span class="blank' + cls + '" id="b' + n + '">' + n + "</span>";
+      }) + "</p>";
+    }).join("");
+  }
+
+  /* ---------- scoring ---------- */
+  function keyOf(n) {
+    var e = exam, k;
+    if (n <= 10) return e.vocabulary[n - 1].answer;
+    if (n <= 20) { k = e.cloze[n <= 15 ? 0 : 1].questions; return k[(n - 11) % 5].answer; }
+    if (n <= 30) return e.fill.answers[n];
+    if (n <= 34) return e.structure.answers[n];
+    var g = e.reading[Math.floor((n - 35) / 4)];
+    return g.questions[(n - 35) % 4].answer;
+  }
+  function mixedQ(n) { return exam.mixed.questions.filter(function (q) { return q.n === n; })[0]; }
+  function norm(s) { return String(s || "").trim().toLowerCase().replace(/[.\s]+$/, ""); }
+  function mixedRight(q) {
+    var a = st.a[q.n];
+    if (q.type === "fill") return q.accepted.some(function (x) { return norm(x) === norm(a); });
+    if (q.type === "choice") return a === q.answer;
+    if (q.type === "multi") return Array.isArray(a) && a.slice().sort().join() === q.answer.slice().sort().join();
+    return null;
+  }
+  function selfPts(k, max) { var v = parseFloat(st.self[k]); return isNaN(v) ? 0 : Math.max(0, Math.min(max, v)); }
+
+  function tally() {
+    function range(a, b, w) { var s = 0; for (var n = a; n <= b; n++) if (st.a[n] === keyOf(n)) s += w; return s; }
+    var mixedAuto = 0, mixedSelf = 0, mixedMax = 0;
+    exam.mixed.questions.forEach(function (q) {
+      mixedMax += q.points;
+      if (q.type === "short") mixedSelf += selfPts(q.n, q.points);
+      else if (mixedRight(q)) mixedAuto += q.points;
+    });
+    var rows = [
+      ["詞彙", range(1, 10, 1), 10],
+      ["綜合測驗", range(11, 20, 1), 10],
+      ["文意選填", range(21, 30, 1), 10],
+      ["篇章結構", range(31, 34, 2), 8],
+      ["閱讀測驗", range(35, 46, 2), 24],
+      ["混合題", mixedAuto + mixedSelf, mixedMax],
+      ["中譯英", selfPts("t1", 4) + selfPts("t2", 4), 8],
+      ["英文作文", selfPts("w", 20), 20]
+    ];
+    var total = rows.reduce(function (s, r) { return s + r[1]; }, 0);
+    return { rows: rows, total: total };
+  }
+
+  /* ---------- rendering ---------- */
+  function optButtons(n, options, long) {
+    var key = st.done ? keyOf(n) : null, mine = st.a[n];
+    return '<div class="opts' + (long ? " long" : "") + '">' + options.map(function (o, i) {
+      var v = L(i), cls = "opt";
+      if (mine === v) cls += " sel";
+      if (key) { if (v === key) cls += " right"; else if (mine === v) cls += " wrong"; }
+      return '<button type="button" class="' + cls + '" data-q="' + n + '" data-v="' + v + '" aria-pressed="' + (mine === v) + '"><span class="bub">' + v + "</span><span>" + esc(o) + "</span></button>";
+    }).join("") + "</div>";
+  }
+  function bubRow(n, count) {
+    var key = st.done ? keyOf(n) : null, mine = st.a[n], h = "";
+    for (var i = 0; i < count; i++) {
+      var v = L(i), cls = "bub";
+      if (mine === v) cls += " sel";
+      if (key) { if (v === key) cls += " right"; else if (mine === v) cls += " wrong"; }
+      h += '<button type="button" class="' + cls + '" data-q="' + n + '" data-v="' + v + '" aria-label="第 ' + n + " 題選 " + v + '" aria-pressed="' + (mine === v) + '">' + v + "</button>";
+    }
+    return '<div class="bubrow">' + h + "</div>";
+  }
+  function verdict(n) {
+    if (!st.done) return "";
+    var ok = st.a[n] === keyOf(n);
+    return '<span class="verdict ' + (ok ? "ok" : "no") + '">' + (ok ? "答對" : st.a[n] ? "答錯，正解 " + keyOf(n) : "未作答，正解 " + keyOf(n)) + "</span>";
+  }
+  function expl(text) { return st.done ? '<div class="expl"><b>解析　</b>' + esc(text) + "</div>" : ""; }
+  function blankMarks(a, b) {
+    if (!st.done) return null;
+    var m = {}; for (var n = a; n <= b; n++) m[n] = st.a[n] === keyOf(n) ? "ok" : "no"; return m;
+  }
+
+  function render() {
+    var e = exam, h = "";
+    $("title").textContent = e.title;
+    document.title = "學測英文週考 · " + e.id;
+    $("meta").innerHTML = "<span>週次 <b>" + esc(e.id) + "</b></span><span>出題日期 <b>" + esc(e.date) + "</b></span><span>滿分 <b>100</b></span><span>作答時間 <b>100 分鐘</b></span>";
+    $("topics").innerHTML = (e.topics || []).map(function (t) { return "<span>" + esc(t) + "</span>"; }).join("");
+
+    h += '<section class="part"><h2>第壹部分　選擇題<small>占 62 分</small></h2>';
+
+    h += '<div class="sec" id="s-vocab"><h3>一、詞彙題（占 10 分）</h3><p class="direction">第 1 題至第 10 題，每題選出最適當的選項。答對得 1 分，答錯或未作答不倒扣。</p>';
+    e.vocabulary.forEach(function (q) {
+      h += '<div class="q"><span class="qn">' + q.n + '</span><div><p class="stem">' + esc(q.stem) + verdict(q.n) + "</p>" + optButtons(q.n, q.options) + "</div>" + expl(q.explanation) + "</div>";
+    });
+    h += "</div>";
+
+    h += '<div class="sec" id="s-cloze"><h3>二、綜合測驗（占 10 分）</h3><p class="direction">第 11 題至第 20 題，每題依文意選出最適當的選項。答對得 1 分。</p>';
+    e.cloze.forEach(function (g, k) {
+      var a = 11 + k * 5;
+      h += '<h3 style="font-size:14px;color:var(--graphite);margin:18px 0 8px">第 ' + a + " 至 " + (a + 4) + " 題為題組</h3>";
+      h += '<div class="passage">' + paras(g.passage, blankMarks(a, a + 4)) + "</div>";
+      g.questions.forEach(function (q) {
+        h += '<div class="q"><span class="qn">' + q.n + "</span><div>" + verdict(q.n) + optButtons(q.n, q.options) + "</div>" + expl(q.explanation) + "</div>";
+      });
+    });
+    h += "</div>";
+
+    var f = e.fill;
+    h += '<div class="sec" id="s-fill"><h3>三、文意選填（占 10 分）</h3><p class="direction">第 21 題至第 30 題，從 (A) 到 (J) 中選出最適當的選項，每個選項只能用一次。答對得 1 分。</p>';
+    h += '<div class="passage">' + paras(f.passage, blankMarks(21, 30)) + "</div>";
+    h += '<div class="optbox words">' + Object.keys(f.options).sort().map(function (k) { return "<span><b>(" + k + ")</b>" + esc(f.options[k]) + "</span>"; }).join("") + "</div>";
+    for (var n = 21; n <= 30; n++) h += '<div class="q"><span class="qn">' + n + "</span><div>" + bubRow(n, 10) + verdict(n) + "</div>" + expl(f.explanations[n]) + "</div>";
+    h += "</div>";
+
+    var s = e.structure;
+    h += '<div class="sec" id="s-struct"><h3>四、篇章結構（占 8 分）</h3><p class="direction">第 31 題至第 34 題，從 (A) 到 (D) 中選出最適當的句子填入空格。答對得 2 分。</p>';
+    h += '<div class="passage">' + paras(s.passage, blankMarks(31, 34)) + "</div>";
+    h += '<div class="optbox">' + Object.keys(s.options).sort().map(function (k) { return "<span><b>(" + k + ")</b>" + esc(s.options[k]) + "</span>"; }).join("") + "</div>";
+    for (n = 31; n <= 34; n++) h += '<div class="q"><span class="qn">' + n + "</span><div>" + bubRow(n, 4) + verdict(n) + "</div>" + expl(s.explanations[n]) + "</div>";
+    h += "</div>";
+
+    h += '<div class="sec" id="s-read"><h3>五、閱讀測驗（占 24 分）</h3><p class="direction">第 35 題至第 46 題，每題依文意選出最適當的選項。答對得 2 分。</p>';
+    e.reading.forEach(function (g, k) {
+      var a = 35 + k * 4;
+      h += '<h3 style="font-size:14px;color:var(--graphite);margin:18px 0 8px">第 ' + a + " 至 " + (a + 3) + " 題為題組</h3>";
+      h += '<div class="passage">' + paras(g.passage) + "</div>";
+      g.questions.forEach(function (q) {
+        h += '<div class="q"><span class="qn">' + q.n + '</span><div><p class="stem">' + esc(q.stem) + verdict(q.n) + "</p>" + optButtons(q.n, q.options, true) + "</div>" + expl(q.explanation) + "</div>";
+      });
+    });
+    h += "</div></section>";
+
+    var m = e.mixed;
+    h += '<section class="part" id="s-mixed"><h2>第貳部分　混合題<small>占 10 分</small></h2><div class="sec"><p class="direction">第 47 題至第 50 題為題組，依題目指示作答。</p>';
+    h += '<div class="passage">' + paras(m.passage) + "</div>";
+    if (m.table) {
+      h += '<div class="tablewrap"><table class="grid"><caption>' + esc(m.table.caption || "") + "</caption><tr>" + m.table.headers.map(function (x) { return "<th>" + esc(x) + "</th>"; }).join("") + "</tr>";
+      m.table.rows.forEach(function (r) { h += "<tr>" + r.map(function (c) { return "<td>" + paras(c).replace(/<\/?p>/g, "") + "</td>"; }).join("") + "</tr>"; });
+      h += "</table></div>";
+    }
+    m.questions.forEach(function (q) {
+      var right = st.done ? mixedRight(q) : null, mark = "";
+      if (st.done && right !== null) mark = '<span class="verdict ' + (right ? "ok" : "no") + '">' + (right ? "答對" : "答錯") + "</span>";
+      h += '<div class="q"><span class="qn">' + q.n + "</span><div>";
+      h += '<p class="stem">' + esc(q.prompt || q.stem) + "（" + q.points + " 分）" + mark + "</p>";
+      if (q.type === "fill") {
+        h += '<input type="text" id="in' + q.n + '" data-text="' + q.n + '" autocomplete="off" autocapitalize="off" spellcheck="false" value="' + esc(st.a[q.n] || "") + '"' + (st.done ? " readonly" : "") + ">";
+        if (st.done) h += '<div class="expl" style="margin-top:8px"><b>答案　</b>' + esc(q.accepted.join(" / ")) + "　" + esc(q.explanation) + "</div>";
+      } else if (q.type === "multi") {
+        var mine = st.a[q.n] || [];
+        h += '<div class="opts long">' + Object.keys(q.options).sort().map(function (v) {
+          var cls = "opt", on = mine.indexOf(v) >= 0, isKey = q.answer.indexOf(v) >= 0;
+          if (on) cls += " sel";
+          if (st.done) { if (isKey) cls += " right"; else if (on) cls += " wrong"; }
+          return '<button type="button" class="' + cls + '" data-multi="' + q.n + '" data-v="' + v + '" aria-pressed="' + on + '"><span class="bub">' + v + "</span><span>" + esc(q.options[v]) + "</span></button>";
+        }).join("") + "</div>";
+        h += '<p class="hint">多選題：全部選對才得分。</p>';
+        if (st.done) h += '<div class="expl" style="margin-top:8px"><b>答案　</b>' + q.answer.join("、") + "　" + esc(q.explanation) + "</div>";
+      } else if (q.type === "choice") {
+        h += optButtons(q.n, q.options, true);
+        if (st.done) h += '<div class="expl" style="margin-top:8px">' + esc(q.explanation) + "</div>";
+      } else {
+        h += '<textarea id="in' + q.n + '" data-text="' + q.n + '"' + (st.done ? " readonly" : "") + ">" + esc(st.a[q.n] || "") + "</textarea>";
+        if (st.done) h += '<div class="expl" style="margin-top:8px"><b>參考答案　</b>' + esc(q.reference) + "<br>" + esc(q.explanation) + "</div>" + selfBox(q.n, q.points);
+      }
+      h += "</div></div>";
+    });
+    h += "</div></section>";
+
+    h += '<section class="part" id="s-open"><h2>第參部分　非選擇題<small>占 28 分</small></h2>';
+    h += '<div class="sec"><h3>一、中譯英（占 8 分）</h3><p class="direction">請將以下中文句子譯成正確、通順、達意的英文。每題 4 分。</p>';
+    e.translation.forEach(function (t) {
+      var k = "t" + t.n;
+      h += '<div class="q"><span class="qn">' + t.n + '.</span><div><p class="zh">' + esc(t.zh) + "</p>";
+      h += '<textarea id="in' + k + '" data-text="' + k + '" style="min-height:4.5em"' + (st.done ? " readonly" : "") + ">" + esc(st.a[k] || "") + "</textarea>";
+      if (st.done) h += '<div class="expl ref" style="margin-top:8px"><b>參考譯文</b>' + t.reference.map(function (r) { return "<p>" + esc(r) + "</p>"; }).join("") + '<span class="hint">' + esc(t.explanation || "") + "</span></div>" + selfBox(k, 4);
+      h += "</div></div>";
+    });
+    h += "</div>";
+    var w = e.writing;
+    h += '<div class="sec"><h3>二、英文作文（占 20 分）</h3><p class="direction">文長至少 120 個單詞。</p>';
+    h += '<p class="prompt">' + esc(w.prompt) + "</p>";
+    h += '<textarea class="essay" id="inw" data-text="w"' + (st.done ? " readonly" : "") + ">" + esc(st.a.w || "") + '</textarea><div class="count" id="wc"></div>';
+    if (st.done) {
+      h += '<div class="expl ref" style="margin-top:8px"><b>參考範文</b>' + paras(w.reference) + "</div>";
+      h += '<p class="hint" style="margin-top:8px">大考評分項目：內容 5 分、組織 5 分、文法句構 4 分、字彙拼字 4 分、格式與標點 2 分。</p>' + selfBox("w", 20);
+    }
+    h += "</div></section>";
+
+    h += '<section id="s-score">' + scoreSheet() + "</section>";
+    paper.innerHTML = h;
+    paper.classList.toggle("done", st.done);
+    countWords();
+    drawClock();
+  }
+
+  function selfBox(k, max) {
+    return '<div class="self"><label for="self-' + k + '">自評得分</label><input type="number" id="self-' + k + '" data-self="' + k + '" min="0" max="' + max + '" step="0.5" value="' + esc(st.self[k] == null ? "" : st.self[k]) + '"><span>/ ' + max + " 分</span></div>";
+  }
+
+  function scoreSheet() {
+    if (!st.done) {
+      var answered = 0; for (var n = 1; n <= 46; n++) if (st.a[n]) answered++;
+      return '<div class="score"><div class="total"><strong>' + answered + '</strong><span>/ 46 題選擇題已作答</span></div><p class="hint">按「交卷」後，選擇題與混合題的 47–49 題會自動計分；第 50 題、中譯英和作文請對照參考答案自評分數。</p></div>';
+    }
+    var t = tally();
+    return '<div class="score"><div class="total"><strong id="totalPts">' + fmt(t.total) + '</strong><span>/ 100 分</span></div><div class="rows" id="rows">' + rowsHtml(t) + '</div><p class="hint">非選擇題的分數來自你填的自評，修改後總分會即時更新。</p><div class="actions"><button class="btn" type="button" id="resetBtn">清除作答，重新開始</button></div></div>';
+  }
+  function rowsHtml(t) {
+    return t.rows.map(function (r) {
+      return '<div class="row"><span>' + r[0] + '</span><span class="track"><i style="width:' + (r[2] ? (100 * r[1] / r[2]) : 0) + '%"></i></span><span class="pts">' + fmt(r[1]) + "/" + r[2] + "</span></div>";
+    }).join("");
+  }
+  function fmt(x) { return Math.round(x * 10) / 10; }
+  function refreshScore() {
+    if (!st.done) { $("s-score").innerHTML = scoreSheet(); return; }
+    var t = tally();
+    $("totalPts").textContent = fmt(t.total);
+    $("rows").innerHTML = rowsHtml(t);
+  }
+
+  function countWords() {
+    var el = $("wc"); if (!el) return;
+    var n = (st.a.w || "").trim().split(/\s+/).filter(Boolean).length;
+    el.textContent = n + " 個單詞" + (n < 120 ? "（至少 120）" : "");
+  }
+
+  /* ---------- timer ---------- */
+  function drawClock() {
+    var s = Math.max(0, st.left), mm = Math.floor(s / 60), ss = s % 60;
+    $("clock").textContent = (mm < 10 ? "0" : "") + mm + ":" + (ss < 10 ? "0" : "") + ss;
+    $("clock").classList.toggle("low", s <= 600 && !st.done);
+    $("timerBtn").textContent = st.done ? "已交卷" : st.running ? "暫停" : st.left < LIMIT ? "繼續計時" : "開始計時";
+    $("timerBtn").disabled = st.done;
+    $("submitBtn").hidden = st.done;
+  }
+  function runTimer(on) {
+    clearInterval(tick); tick = null;
+    st.running = on && !st.done;
+    if (st.running) tick = setInterval(function () {
+      st.left--;
+      if (st.left <= 0) { st.left = 0; submit(); return; }
+      if (st.left % 10 === 0) save();
+      drawClock();
+    }, 1000);
+    drawClock(); save();
+  }
+
+  var armTimer = null;
+  function submit() {
+    runTimer(false);
+    st.done = true; save(); render();
+    $("s-score").scrollIntoView();
+  }
+
+  /* ---------- events ---------- */
+  paper.addEventListener("click", function (ev) {
+    var b = ev.target.closest("button");
+    if (!b) return;
+    if (b.id === "resetBtn") { st = fresh(); save(); render(); window.scrollTo(0, 0); return; }
+    if (st.done) return;
+    if (b.dataset.q) {
+      var n = b.dataset.q;
+      st.a[n] = st.a[n] === b.dataset.v ? undefined : b.dataset.v;
+      var group = paper.querySelectorAll('[data-q="' + n + '"]');
+      for (var i = 0; i < group.length; i++) {
+        var on = group[i].dataset.v === st.a[n];
+        group[i].classList.toggle("sel", on);
+        group[i].setAttribute("aria-pressed", on);
+      }
+      save(); refreshScore();
+    } else if (b.dataset.multi) {
+      var m = b.dataset.multi, list = (st.a[m] || []).slice(), at = list.indexOf(b.dataset.v);
+      if (at >= 0) list.splice(at, 1); else list.push(b.dataset.v);
+      st.a[m] = list;
+      b.classList.toggle("sel", at < 0);
+      b.setAttribute("aria-pressed", at < 0);
+      save();
+    }
+  });
+  paper.addEventListener("input", function (ev) {
+    var t = ev.target;
+    if (t.dataset.text && !st.done) { st.a[t.dataset.text] = t.value; if (t.dataset.text === "w") countWords(); save(); }
+    if (t.dataset.self) { st.self[t.dataset.self] = t.value; save(); refreshScore(); }
+  });
+  $("timerBtn").addEventListener("click", function () { runTimer(!st.running); });
+  $("submitBtn").addEventListener("click", function () {
+    var b = this;
+    if (!b.classList.contains("arm")) {
+      b.classList.add("arm"); b.textContent = "確定交卷？";
+      armTimer = setTimeout(function () { b.classList.remove("arm"); b.textContent = "交卷"; }, 4000);
+      return;
+    }
+    clearTimeout(armTimer); b.classList.remove("arm"); b.textContent = "交卷";
+    submit();
+  });
+
+  /* ---------- exam loading ---------- */
+  function open(id) {
+    if (st) runTimer(false);
+    var go = function () {
+      exam = window.GSAT_EXAMS[id];
+      st = load(id) || fresh();
+      st.running = false;
+      render();
+    };
+    if (window.GSAT_EXAMS && window.GSAT_EXAMS[id]) return go();
+    var s = document.createElement("script");
+    s.src = "data/" + id + ".js";
+    s.onload = go;
+    s.onerror = function () { paper.innerHTML = '<p class="empty">找不到 ' + esc(id) + " 的試卷資料。請先執行 scripts/build.py 產生 data/ 資料夾。</p>"; };
+    document.body.appendChild(s);
+  }
+
+  if (!manifest.length) {
+    paper.innerHTML = '<p class="empty">還沒有試卷。請執行 python3 gsat-english/scripts/build.py 產生資料檔。</p>';
+    return;
+  }
+  var pick = $("examPick");
+  pick.innerHTML = manifest.map(function (x, i) { return '<option value="' + esc(x.id) + '">' + esc(x.id) + "　" + esc(x.title) + (i === 0 ? "（最新）" : "") + "</option>"; }).join("");
+  var want = location.hash.slice(1);
+  var first = manifest.some(function (x) { return x.id === want; }) ? want : manifest[0].id;
+  pick.value = first;
+  pick.addEventListener("change", function () { open(pick.value); window.scrollTo(0, 0); });
+  open(first);
+})();
+</script>
