@@ -1,0 +1,64 @@
+name: 每週更新總經風險儀表板
+
+on:
+  schedule:
+    # 每週六 01:17 UTC（台灣時間週六 09:17），週五的市場數據已收齊
+    - cron: "17 1 * * 6"
+  workflow_dispatch:
+  push:
+    branches: [main, master]
+    paths:
+      - "macro/**"
+      - ".github/workflows/update-macro.yml"
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: macro-dashboard
+  cancel-in-progress: false
+
+jobs:
+  update:
+    if: github.event_name != 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: 從 FRED 抓取數據並計算風險分數
+        run: python3 macro/scripts/update_macro.py
+      - name: 提交更新後的數據
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add macro/data
+          if git diff --cached --quiet; then
+            echo "數據沒有變化"
+          else
+            git commit -m "Update macro data $(date -u +%Y-%m-%d)"
+            git push
+          fi
+
+  deploy:
+    needs: update
+    if: always() && (needs.update.result == 'success' || needs.update.result == 'skipped')
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - name: 取得最新提交（含剛更新的數據）
+        run: git pull --ff-only origin "${GITHUB_REF_NAME}"
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: macro
+      - id: deployment
+        uses: actions/deploy-pages@v4
