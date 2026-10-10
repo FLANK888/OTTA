@@ -1,12 +1,12 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-Hant">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Tenarai Notebook</title>
+<title>手習い帳</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&family=Figtree:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&family=Noto+Sans+TC:wght@400;500;700&display=swap">
 <style>
 /* Layout: one narrow notebook column; each question is a sheet with a prompt on top and 田字格 practice boxes below. */
 :root{
@@ -14,7 +14,7 @@
   --grid:#8fbfae; --grid-faint:#c7e0d6; --accent:#2f4a8a; --accent-soft:#e6ebf6;
   --shu:#cf3b2b; --shu-soft:#fbe9e6; --ghost:rgba(30,36,51,.13); --pen:#1e2433;
   --f-jp:"Klee One","Hiragino Mincho ProN","Yu Mincho",serif;
-  --f-ui:"Figtree","Segoe UI",system-ui,sans-serif;
+  --f-ui:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
   --box:clamp(64px,19vw,96px);
 }
 @media (prefers-color-scheme: dark){
@@ -48,7 +48,7 @@ h1 small{display:block;font-family:var(--f-ui);font-weight:400;font-size:.8rem;c
 .seg button{border:0;background:none;padding:6px 14px;border-radius:999px;font-size:.88rem;color:var(--muted)}
 .seg button[aria-pressed="true"]{background:var(--accent);color:var(--sheet);font-weight:500}
 .datebar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.datebar .date{font-size:1.2rem;font-weight:600;min-width:0}
+.datebar .date{font-family:var(--f-jp);font-size:1.25rem;font-weight:600;min-width:0}
 .icon-btn{border:1px solid var(--line);background:var(--sheet);border-radius:8px;width:34px;height:34px;display:inline-grid;place-items:center;padding:0}
 .icon-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .text-btn{border:1px solid var(--line);background:var(--sheet);border-radius:8px;padding:5px 12px;font-size:.85rem}
@@ -57,7 +57,7 @@ h1 small{display:block;font-family:var(--f-ui);font-weight:400;font-size:.8rem;c
 
 .week{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
 .day{border:1px solid var(--line);background:var(--sheet);border-radius:10px;padding:6px 0 4px;display:flex;flex-direction:column;align-items:center;gap:0;position:relative;min-height:62px}
-.day .wd{font-size:.75rem;letter-spacing:.04em;color:var(--muted)}
+.day .wd{font-family:var(--f-jp);font-size:.8rem;color:var(--muted)}
 .day .dn{font-weight:500;font-variant-numeric:tabular-nums}
 .day.sel{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
 .day .mk{height:14px;display:grid;place-items:center}
@@ -80,7 +80,7 @@ h1 small{display:block;font-family:var(--f-ui);font-weight:400;font-size:.8rem;c
 
 .rows{display:flex;flex-direction:column;gap:10px}
 .row{display:flex;align-items:center;gap:10px}
-.row-label{writing-mode:vertical-rl;transform:rotate(180deg);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);flex:none}
+.row-label{writing-mode:vertical-rl;font-size:.72rem;letter-spacing:.2em;color:var(--muted);flex:none}
 .boxes{display:flex;flex-wrap:wrap;gap:0;min-width:0}
 .box{width:var(--box);height:var(--box);position:relative;border:1.5px solid var(--grid);margin:0 -1.5px -1.5px 0;touch-action:none;
   background:
@@ -106,9 +106,8 @@ h1 small{display:block;font-family:var(--f-ui);font-weight:400;font-size:.8rem;c
 .sheet.done .stamp{opacity:.9;transform:rotate(-8deg)}
 .sheet.done .tools{margin-right:72px}
 
-.done-banner{border:1.5px solid var(--shu);background:var(--shu-soft);color:var(--shu);border-radius:12px;padding:12px 16px;font-size:1.05rem;font-weight:600;display:flex;align-items:center;gap:10px}
+.done-banner{border:1.5px solid var(--shu);background:var(--shu-soft);color:var(--shu);border-radius:12px;padding:12px 16px;font-family:var(--f-jp);font-size:1.15rem;font-weight:600;display:flex;align-items:center;gap:10px}
 .done-banner svg{width:40px;height:40px;flex:none}
-.done-banner .jp{font-family:var(--f-jp);font-size:1.15rem}
 footer{color:var(--muted);font-size:.8rem}
 
 @media (max-width:520px){
@@ -125,17 +124,17 @@ footer{color:var(--muted);font-size:.8rem}
 <div class="wrap">
   <header>
     <div class="title-row">
-      <h1>手習い帳<small>Japanese handwriting practice · 5 words a day</small></h1>
-      <div class="seg" role="group" aria-label="What to write">
-        <button id="mode-kanji" data-mode="kanji">Write kanji</button>
-        <button id="mode-kana" data-mode="kana">Write kana</button>
+      <h1>手習い帳<small>日文手寫練習・每天五個單字</small></h1>
+      <div class="seg" role="group" aria-label="書寫目標">
+        <button id="mode-kanji" data-mode="kanji">寫漢字</button>
+        <button id="mode-kana" data-mode="kana">寫假名</button>
       </div>
     </div>
     <div class="datebar">
-      <button class="icon-btn" id="prev" aria-label="Previous day"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button>
+      <button class="icon-btn" id="prev" aria-label="前一天"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button>
       <span class="date" id="date"></span>
-      <button class="icon-btn" id="next" aria-label="Next day"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
-      <button class="text-btn" id="today" hidden>Back to today</button>
+      <button class="icon-btn" id="next" aria-label="後一天"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+      <button class="text-btn" id="today" hidden>回到今天</button>
       <span class="progress" id="progress"></span>
     </div>
     <div class="week" id="week"></div>
@@ -144,41 +143,40 @@ footer{color:var(--muted);font-size:.8rem}
   <div id="banner" hidden></div>
   <main id="list" style="display:flex;flex-direction:column;gap:16px"></main>
 
-  <footer>Your handwriting and self-grades are saved only in this browser on this device. Words rotate by date, so everyone sees the same five words on the same day.</footer>
+  <footer>手寫內容與自評只存在這台裝置的瀏覽器裡。單字依日期輪替，同一天打開都是同樣五個字。</footer>
 </div>
 
 <script>
-// [written form, reading, English meaning, source word (katakana loanwords only)]
+// [表記, 讀音, 中文, 英文來源(片假名用)]
 const WORDS = [
-  ["水","みず","water"],["火","ひ","fire"],["山","やま","mountain"],["川","かわ","river"],["木","き","tree"],
-  ["花","はな","flower"],["雨","あめ","rain"],["空","そら","sky"],["海","うみ","sea"],["石","いし","stone"],
-  ["人","ひと","person"],["女","おんな","woman"],["男","おとこ","man"],["子供","こども","child"],["友達","ともだち","friend"],
-  ["先生","せんせい","teacher"],["学生","がくせい","student"],["学校","がっこう","school"],["会社","かいしゃ","company"],["病院","びょういん","hospital"],
-  ["駅","えき","station"],["電車","でんしゃ","train"],["車","くるま","car"],["自転車","じてんしゃ","bicycle"],["道","みち","road"],
-  ["店","みせ","shop"],["家","いえ","house"],["部屋","へや","room"],["本","ほん","book"],["新聞","しんぶん","newspaper"],
-  ["手紙","てがみ","letter"],["電話","でんわ","telephone"],["時計","とけい","clock; watch"],["傘","かさ","umbrella"],["机","つくえ","desk"],
-  ["椅子","いす","chair"],["窓","まど","window"],["門","もん","gate"],["猫","ねこ","cat"],["犬","いぬ","dog"],
-  ["鳥","とり","bird"],["魚","さかな","fish"],["肉","にく","meat"],["野菜","やさい","vegetables"],["果物","くだもの","fruit"],
-  ["卵","たまご","egg"],["牛乳","ぎゅうにゅう","milk"],["お茶","おちゃ","tea"],["ご飯","ごはん","rice; meal"],["朝","あさ","morning"],
-  ["昼","ひる","noon"],["夜","よる","night"],["今日","きょう","today"],["明日","あした","tomorrow"],["昨日","きのう","yesterday"],
-  ["毎日","まいにち","every day"],["時間","じかん","time"],["春","はる","spring"],["夏","なつ","summer"],["秋","あき","autumn"],
-  ["冬","ふゆ","winter"],["天気","てんき","weather"],["目","め","eye"],["耳","みみ","ear"],["口","くち","mouth"],
-  ["手","て","hand"],["足","あし","foot; leg"],["頭","あたま","head"],["体","からだ","body"],["名前","なまえ","name"],
-  ["言葉","ことば","word; language"],["仕事","しごと","work; job"],["休み","やすみ","holiday; break"],["旅行","りょこう","travel"],["写真","しゃしん","photo"],
-  ["映画","えいが","movie"],["音楽","おんがく","music"],["大きい","おおきい","big"],["小さい","ちいさい","small"],["高い","たかい","tall; expensive"],
-  ["安い","やすい","cheap"],["新しい","あたらしい","new"],["古い","ふるい","old (things)"],["暑い","あつい","hot (weather)"],["寒い","さむい","cold (weather)"],
-  ["楽しい","たのしい","fun; enjoyable"],["食べる","たべる","to eat"],["飲む","のむ","to drink"],["見る","みる","to see; to watch"],["聞く","きく","to listen; to ask"],
-  ["読む","よむ","to read"],["書く","かく","to write"],["話す","はなす","to speak"],["行く","いく","to go"],["来る","くる","to come"],
-  ["帰る","かえる","to go home"],["買う","かう","to buy"],["歩く","あるく","to walk"],["寝る","ねる","to sleep"],["起きる","おきる","to wake up"],
-  ["コーヒー","コーヒー","coffee","coffee"],["パン","パン","bread","pão (Portuguese)"],["テレビ","テレビ","TV","television"],["カメラ","カメラ","camera","camera"],
-  ["ホテル","ホテル","hotel","hotel"],["ノート","ノート","notebook","notebook"],["ペン","ペン","pen","pen"],["バス","バス","bus","bus"],
-  ["タクシー","タクシー","taxi","taxi"],["レストラン","レストラン","restaurant","restaurant"],
+  ["水","みず","水"],["火","ひ","火"],["山","やま","山"],["川","かわ","河川"],["木","き","樹木"],
+  ["花","はな","花"],["雨","あめ","雨"],["空","そら","天空"],["海","うみ","海"],["石","いし","石頭"],
+  ["人","ひと","人"],["女","おんな","女人"],["男","おとこ","男人"],["子供","こども","小孩"],["友達","ともだち","朋友"],
+  ["先生","せんせい","老師"],["学生","がくせい","學生"],["学校","がっこう","學校"],["会社","かいしゃ","公司"],["病院","びょういん","醫院"],
+  ["駅","えき","車站"],["電車","でんしゃ","電車"],["車","くるま","汽車"],["自転車","じてんしゃ","腳踏車"],["道","みち","道路"],
+  ["店","みせ","商店"],["家","いえ","家"],["部屋","へや","房間"],["本","ほん","書"],["新聞","しんぶん","報紙"],
+  ["手紙","てがみ","信"],["電話","でんわ","電話"],["時計","とけい","時鐘；手錶"],["傘","かさ","雨傘"],["机","つくえ","書桌"],
+  ["椅子","いす","椅子"],["窓","まど","窗戶"],["門","もん","大門"],["猫","ねこ","貓"],["犬","いぬ","狗"],
+  ["鳥","とり","鳥"],["魚","さかな","魚"],["肉","にく","肉"],["野菜","やさい","蔬菜"],["果物","くだもの","水果"],
+  ["卵","たまご","蛋"],["牛乳","ぎゅうにゅう","牛奶"],["お茶","おちゃ","茶"],["ご飯","ごはん","飯；餐"],["朝","あさ","早上"],
+  ["昼","ひる","中午"],["夜","よる","晚上"],["今日","きょう","今天"],["明日","あした","明天"],["昨日","きのう","昨天"],
+  ["毎日","まいにち","每天"],["時間","じかん","時間"],["春","はる","春天"],["夏","なつ","夏天"],["秋","あき","秋天"],
+  ["冬","ふゆ","冬天"],["天気","てんき","天氣"],["目","め","眼睛"],["耳","みみ","耳朵"],["口","くち","嘴巴"],
+  ["手","て","手"],["足","あし","腳"],["頭","あたま","頭"],["体","からだ","身體"],["名前","なまえ","名字"],
+  ["言葉","ことば","語言；詞彙"],["仕事","しごと","工作"],["休み","やすみ","休假"],["旅行","りょこう","旅行"],["写真","しゃしん","照片"],
+  ["映画","えいが","電影"],["音楽","おんがく","音樂"],["大きい","おおきい","大的"],["小さい","ちいさい","小的"],["高い","たかい","高的；貴的"],
+  ["安い","やすい","便宜的"],["新しい","あたらしい","新的"],["古い","ふるい","舊的"],["暑い","あつい","（天氣）熱的"],["寒い","さむい","（天氣）冷的"],
+  ["楽しい","たのしい","快樂的"],["食べる","たべる","吃"],["飲む","のむ","喝"],["見る","みる","看"],["聞く","きく","聽；問"],
+  ["読む","よむ","讀"],["書く","かく","寫"],["話す","はなす","說話"],["行く","いく","去"],["来る","くる","來"],
+  ["帰る","かえる","回去"],["買う","かう","買"],["歩く","あるく","走路"],["寝る","ねる","睡覺"],["起きる","おきる","起床"],
+  ["コーヒー","コーヒー","咖啡","coffee"],["パン","パン","麵包","pão"],["テレビ","テレビ","電視","television"],["カメラ","カメラ","相機","camera"],
+  ["ホテル","ホテル","飯店","hotel"],["ノート","ノート","筆記本","notebook"],["ペン","ペン","筆","pen"],["バス","バス","公車","bus"],
+  ["タクシー","タクシー","計程車","taxi"],["レストラン","レストラン","餐廳","restaurant"],
 ];
 const PER_DAY = 5, ROWS = 2;
-const WEEKDAY = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
-const MONTH = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const WEEKDAY = ["日","月","火","水","木","金","土"];
 
-// Fixed shuffled order: no repeats within a cycle, which lasts about 23 days
+// 固定的洗牌順序：一輪內不重複，約 22 天輪完
 function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 const ORDER = (() => { const r = mulberry32(5150), o = WORDS.map((_, i) => i);
   for (let i = o.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [o[i], o[j]] = [o[j], o[i]]; } return o; })();
@@ -190,7 +188,7 @@ const addDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + 
 const wordsFor = d => { const s = dayIndex(d) * PER_DAY; return Array.from({ length: PER_DAY }, (_, i) => ORDER[(s + i) % ORDER.length]); };
 const isKatakana = w => !!w[3];
 
-// Storage (this browser only)
+// 儲存（瀏覽器本機）
 const STORE = "jp-handwriting-v1";
 let state = { mode: "kanji", days: {} };
 try { const s = JSON.parse(localStorage.getItem(STORE)); if (s && s.days) state = Object.assign(state, s); } catch (e) {}
@@ -200,7 +198,7 @@ const dayData = k => state.days[k] || (state.days[k] = { grades: {}, strokes: {}
 const dayStatus = d => { const k = keyOf(d), dd = state.days[k]; if (!dd) return 0;
   const ok = wordsFor(d).filter(i => dd.grades[i] === "ok").length; return ok === PER_DAY ? 2 : (ok || Object.keys(dd.strokes).length ? 1 : 0); };
 
-// Hanamaru (the teacher's "well done" flower circle)
+// 花丸
 function hanamaru() {
   let outer = "", inner = "";
   for (let t = 0; t <= 720; t++) { const a = t / 720 * Math.PI * 2, r = 40 + 5 * Math.sin(a * 9);
@@ -211,7 +209,7 @@ function hanamaru() {
 }
 const HANAMARU = hanamaru();
 
-// Handwriting box
+// 手寫格
 const boxes = new Set();
 function makeBox(ghostChar, strokes, onCommit) {
   const el = document.createElement("div"); el.className = "box";
@@ -250,20 +248,20 @@ function makeBox(ghostChar, strokes, onCommit) {
   return api;
 }
 
-// Speech
+// 語音
 const canSpeak = "speechSynthesis" in window;
 function speak(text) { try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = "ja-JP"; u.rate = 0.85;
   const v = speechSynthesis.getVoices().find(v => v.lang && v.lang.startsWith("ja")); if (v) u.voice = v; speechSynthesis.speak(u); } catch (e) {} }
 
-// UI
+// 畫面
 let current = new Date(); current = new Date(current.getFullYear(), current.getMonth(), current.getDate());
 const $ = id => document.getElementById(id);
 
 function promptFor(w) {
-  const [hyoki, kana, en, src] = w;
-  if (isKatakana(w)) return { ask: "Write it in katakana", big: en, mean: src === en ? "Loanword" : `Loanword from “${src}”`, target: hyoki };
-  if (state.mode === "kana") return { ask: "Write the reading in hiragana", big: hyoki, mean: en, target: kana };
-  return { ask: "Write it in kanji", big: kana, mean: en, target: hyoki };
+  const [hyoki, kana, zh, src] = w;
+  if (isKatakana(w)) return { ask: "寫出片假名", big: `「${src}」`, mean: zh, target: hyoki };
+  if (state.mode === "kana") return { ask: "寫出讀音（平假名）", big: hyoki, mean: zh, target: kana };
+  return { ask: "寫出漢字", big: kana, mean: zh, target: hyoki };
 }
 
 function renderSheet(wi, n, dd) {
@@ -275,25 +273,25 @@ function renderSheet(wi, n, dd) {
     <div class="stamp">${HANAMARU}</div>
     <div class="q-head">
       <div class="q-main">
-        <span class="q-no">QUESTION ${n} OF ${PER_DAY}</span>
-        <span class="q-ask">${p.ask} · ${chars.length} character${chars.length > 1 ? "s" : ""}</span>
-        <div class="q-big"><span>${p.big}</span>${canSpeak ? `<button class="speak" aria-label="Play pronunciation"><svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/></svg></button>` : ""}</div>
+        <span class="q-no">第 ${n} 題</span>
+        <span class="q-ask">${p.ask}・${chars.length} 個字</span>
+        <div class="q-big"><span>${p.big}</span>${canSpeak ? `<button class="speak" aria-label="播放發音"><svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/></svg></button>` : ""}</div>
         <span class="q-mean">${p.mean}</span>
       </div>
       <div class="tools">
-        <button class="tool" data-act="hint" aria-pressed="false">Trace</button>
-        <button class="tool" data-act="undo">Undo</button>
-        <button class="tool" data-act="clear">Clear</button>
-        <button class="tool" data-act="reveal" aria-pressed="false">Check answer</button>
+        <button class="tool" data-act="hint" aria-pressed="false">描紅</button>
+        <button class="tool" data-act="undo">復原</button>
+        <button class="tool" data-act="clear">清除</button>
+        <button class="tool" data-act="reveal" aria-pressed="false">對答案</button>
       </div>
     </div>
     <div class="rows"></div>
     <div class="answer" hidden>
       <span class="a-word">${w[0] !== w[1] ? `<ruby>${w[0]}<rt>${w[1]}</rt></ruby>` : w[0]}</span>
-      <span class="a-meta">${w[2]}${w[3] && w[3] !== w[2] ? `<br>from “${w[3]}”` : ""}</span>
+      <span class="a-meta">${w[2]}${w[3] ? `<br>${w[3]}` : ""}</span>
       <div class="grade">
-        <button class="ok" aria-pressed="false">○ Got it</button>
-        <button class="again" aria-pressed="false">△ Practice again</button>
+        <button class="ok" aria-pressed="false">○ 寫對了</button>
+        <button class="again" aria-pressed="false">△ 再練習</button>
       </div>
     </div>`;
 
@@ -301,7 +299,7 @@ function renderSheet(wi, n, dd) {
   const commit = b => { history.push(b); dd.strokes[skey] = api.map(a => a.strokes); save(); renderHeader(); };
   for (let r = 0; r < ROWS; r++) {
     const row = document.createElement("div"); row.className = "row";
-    row.innerHTML = `<span class="row-label">${r === 0 ? "Practice" : "Recall"}</span><div class="boxes"></div>`;
+    row.innerHTML = `<span class="row-label">${r === 0 ? "練習" : "默寫"}</span><div class="boxes"></div>`;
     const bx = row.querySelector(".boxes");
     chars.forEach((c, i) => { const idx = r * chars.length + i;
       const b = makeBox(r === 0 ? c : "", (saved[idx] || []).slice(), commit); api.push(b); bx.append(b.el); });
@@ -331,23 +329,23 @@ function renderSheet(wi, n, dd) {
 
 function renderHeader() {
   const today = new Date(), t0 = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-  $("date").textContent = `${WEEKDAY[current.getDay()]}, ${MONTH[current.getMonth()]} ${current.getDate()}, ${current.getFullYear()}`;
+  $("date").textContent = `${current.getFullYear()}年${current.getMonth() + 1}月${current.getDate()}日（${WEEKDAY[current.getDay()]}）`;
   $("today").hidden = keyOf(current) === keyOf(t0);
   const dd = state.days[keyOf(current)] || { grades: {} };
   const okN = wordsFor(current).filter(i => dd.grades[i] === "ok").length;
-  $("progress").innerHTML = `Done today: <b>${okN}</b> / ${PER_DAY}`;
+  $("progress").innerHTML = `今日完成 <b>${okN}</b> / ${PER_DAY}`;
   const wk = $("week"); wk.innerHTML = "";
   for (let i = 6; i >= 0; i--) {
     const d = addDays(t0, -i), st = dayStatus(d);
     const b = document.createElement("button"); b.className = "day" + (keyOf(d) === keyOf(current) ? " sel" : "");
-    b.setAttribute("aria-label", `${MONTH[d.getMonth()]} ${d.getDate()}`);
+    b.setAttribute("aria-label", `${d.getMonth() + 1}月${d.getDate()}日`);
     b.innerHTML = `<span class="wd">${WEEKDAY[d.getDay()]}</span><span class="dn">${d.getDate()}</span><span class="mk">${st === 2 ? HANAMARU : st === 1 ? '<span class="dot"></span>' : ""}</span>`;
     b.onclick = () => { current = d; render(); };
     wk.append(b);
   }
   const banner = $("banner");
   banner.hidden = okN !== PER_DAY;
-  if (okN === PER_DAY) banner.innerHTML = `<div class="done-banner">${HANAMARU}<span><span class="jp">よくできました！</span> Well done, you finished all five words for today.</span></div>`;
+  if (okN === PER_DAY) banner.innerHTML = `<div class="done-banner">${HANAMARU}<span>よくできました！今天的五個字都寫完了。</span></div>`;
 }
 
 function render() {
@@ -363,7 +361,7 @@ $("prev").onclick = () => { current = addDays(current, -1); render(); };
 $("next").onclick = () => { current = addDays(current, 1); render(); };
 $("today").onclick = () => { const t = new Date(); current = new Date(t.getFullYear(), t.getMonth(), t.getDate()); render(); };
 
-// Redraw ink in the new color when the theme changes
+// 主題切換時重畫筆跡顏色
 const redrawAll = () => boxes.forEach(b => b.redraw());
 matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", redrawAll);
 new MutationObserver(redrawAll).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
