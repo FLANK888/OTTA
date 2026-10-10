@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>總經風險儀表板</title>
+<meta name="description" content="每週自動更新的美國總體經濟數據與投資風險評估">
+<style>
+:root {
+  color-scheme: light;
+  --page: #f9f9f7;
+  --surface: #fcfcfb;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #898781;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11,11,11,0.10);
+  --series: #2a78d6;
+  --series-soft: rgba(42,120,214,0.10);
+  --up-good: #006300;
+  --down-bad: #b42323;
+  --s-low: #0ca30c;
+  --s-modlow: #7db22b;
+  --s-mod: #fab219;
+  --s-elev: #ec835a;
+  --s-high: #d03b3b;
+  --band-alpha: 0.10;
+  --font: system-ui, -apple-system, "Segoe UI", "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --page: #0d0d0d;
+    --surface: #1a1a19;
+    --ink: #f0efec;
+    --ink-2: #c3c2b7;
+    --muted: #898781;
+    --grid: #2c2c2a;
+    --axis: #383835;
+    --border: rgba(255,255,255,0.10);
+    --series: #3987e5;
+    --series-soft: rgba(57,135,229,0.16);
+    --up-good: #0ca30c;
+    --down-bad: #e66767;
+    --band-alpha: 0.14;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #0d0d0d;
+  --surface: #1a1a19;
+  --ink: #f0efec;
+  --ink-2: #c3c2b7;
+  --muted: #898781;
+  --grid: #2c2c2a;
+  --axis: #383835;
+  --border: rgba(255,255,255,0.10);
+  --series: #3987e5;
+  --series-soft: rgba(57,135,229,0.16);
+  --up-good: #0ca30c;
+  --down-bad: #e66767;
+  --band-alpha: 0.14;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font: 15px/1.6 var(--font);
+}
+.wrap { max-width: 1120px; margin: 0 auto; padding: 24px 16px 64px; }
+header.top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px; margin-bottom: 20px; }
+h1 { font-size: 24px; margin: 0; letter-spacing: 0.02em; }
+.meta { color: var(--ink-2); font-size: 13px; }
+.meta b { color: var(--ink); font-weight: 600; }
+.theme-btn {
+  border: 1px solid var(--border); background: var(--surface); color: var(--ink-2);
+  border-radius: 8px; padding: 6px 10px; font: inherit; font-size: 13px; cursor: pointer;
+}
+.banner {
+  border: 1px solid var(--s-mod); background: color-mix(in srgb, var(--s-mod) 12%, var(--surface));
+  border-radius: 10px; padding: 10px 14px; margin-bottom: 16px; font-size: 14px;
+}
+.banner.err { border-color: var(--s-high); background: color-mix(in srgb, var(--s-high) 10%, var(--surface)); }
+.card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px;
+}
+h2 { font-size: 17px; margin: 0 0 4px; }
+.sub { color: var(--ink-2); font-size: 13px; margin: 0 0 14px; }
+section { margin-top: 20px; }
+
+/* ---- 綜合風險 ---- */
+.hero { display: grid; grid-template-columns: minmax(240px, 320px) 1fr; gap: 28px; }
+@media (max-width: 760px) { .hero { grid-template-columns: 1fr; gap: 18px; } }
+.hero-label { color: var(--ink-2); font-size: 13px; }
+.hero-num { font-size: 64px; font-weight: 700; line-height: 1.05; margin: 4px 0 2px; }
+.hero-num small { font-size: 18px; color: var(--muted); font-weight: 500; margin-left: 4px; }
+.level-chip {
+  display: inline-flex; align-items: center; gap: 6px; font-weight: 600; font-size: 15px;
+  padding: 3px 10px 3px 6px; border-radius: 999px; border: 1px solid var(--border);
+}
+.level-chip .dot { width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-size: 11px; font-weight: 700; }
+.deltas { display: flex; gap: 16px; margin-top: 12px; font-size: 13px; color: var(--ink-2); }
+.deltas b { font-variant-numeric: tabular-nums; }
+.worse { color: var(--down-bad); }
+.better { color: var(--up-good); }
+.meter { margin-top: 18px; }
+.meter-track { position: relative; display: flex; gap: 2px; height: 10px; }
+.meter-track span { flex: 1; border-radius: 2px; opacity: 0.85; }
+.meter-track span:first-child { border-radius: 5px 2px 2px 5px; }
+.meter-track span:last-child { border-radius: 2px 5px 5px 2px; }
+.meter-pin {
+  position: absolute; top: -5px; width: 4px; height: 20px; border-radius: 2px;
+  background: var(--ink); box-shadow: 0 0 0 2px var(--surface); transform: translateX(-2px);
+}
+.meter-scale { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-top: 6px; font-variant-numeric: tabular-nums; }
+.posture { font-size: 16px; font-weight: 600; margin: 0 0 10px; }
+.summary { margin: 0; padding-left: 18px; color: var(--ink-2); }
+.summary li { margin: 3px 0; }
+.cats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 16px; }
+@media (max-width: 760px) { .cats { grid-template-columns: repeat(2, 1fr); } }
+.cat { border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; }
+.cat .n { font-size: 12px; color: var(--ink-2); }
+.cat .v { font-size: 22px; font-weight: 700; display: flex; align-items: baseline; gap: 6px; }
+.cat .v em { font-style: normal; font-size: 12px; font-weight: 500; color: var(--ink-2); }
+.cat .bar { height: 4px; background: var(--grid); border-radius: 2px; margin-top: 6px; overflow: hidden; }
+.cat .bar i { display: block; height: 100%; border-radius: 2px; }
+
+/* ---- 圖表 ---- */
+.chart-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.seg { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.seg button { border: 0; background: transparent; color: var(--ink-2); font: inherit; font-size: 13px; padding: 5px 12px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--series-soft); color: var(--ink); font-weight: 600; }
+#history { position: relative; margin-top: 8px; }
+#history svg { display: block; width: 100%; }
+.axis-t { fill: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+.band-t { fill: var(--muted); font-size: 11px; }
+.legend { display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; color: var(--ink-2); margin-top: 8px; }
+.legend span { display: inline-flex; align-items: center; gap: 5px; }
+.legend i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+
+.tip {
+  position: fixed; z-index: 10; pointer-events: none; background: var(--surface); color: var(--ink);
+  border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; font-size: 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12); white-space: nowrap; display: none;
+  font-variant-numeric: tabular-nums;
+}
+.tip .d { color: var(--muted); }
+
+/* ---- 配置 ---- */
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+@media (max-width: 760px) { .two { grid-template-columns: 1fr; } }
+.alloc-bar { display: flex; gap: 2px; height: 28px; margin: 6px 0 10px; }
+.alloc-bar div { border-radius: 4px; min-width: 2px; }
+.alloc-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px 16px; font-size: 14px; }
+.alloc-list span { display: flex; align-items: center; gap: 6px; }
+.alloc-list i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+.alloc-list b { margin-left: auto; font-variant-numeric: tabular-nums; }
+.disclaimer { font-size: 12px; color: var(--muted); margin-top: 12px; }
+.ref-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+@media (max-width: 500px) { .ref-grid { grid-template-columns: 1fr; } }
+.ref { border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; }
+.ref .n { font-size: 12px; color: var(--ink-2); }
+.ref .v { font-size: 20px; font-weight: 700; }
+.ref .c { font-size: 12px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+
+/* ---- 指標表 ---- */
+.filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.tbl-wrap { overflow-x: auto; margin: 0 -20px; padding: 0 20px; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 640px; }
+th { text-align: left; font-size: 12px; font-weight: 600; color: var(--muted); padding: 6px 8px; border-bottom: 1px solid var(--axis); white-space: nowrap; }
+td { padding: 10px 8px; border-bottom: 1px solid var(--grid); vertical-align: middle; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+tr.row { cursor: pointer; }
+tr.row:hover td { background: var(--series-soft); }
+tr.cat-row td { font-size: 12px; font-weight: 700; color: var(--ink-2); padding-top: 16px; border-bottom: 1px solid var(--axis); }
+.ind-name { font-weight: 600; }
+.ind-date { font-size: 12px; color: var(--muted); }
+.pill {
+  display: inline-flex; align-items: center; gap: 6px; font-weight: 600; font-variant-numeric: tabular-nums;
+}
+.pill i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.spark { display: block; }
+tr.detail td { background: color-mix(in srgb, var(--series-soft) 50%, transparent); font-size: 13px; color: var(--ink-2); }
+tr.detail[hidden] { display: none; }
+.thr { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 6px; font-variant-numeric: tabular-nums; }
+.method { color: var(--ink-2); font-size: 14px; }
+.method h3 { font-size: 14px; color: var(--ink); margin: 14px 0 4px; }
+.method ul { margin: 4px 0; padding-left: 18px; }
+footer { margin-top: 28px; color: var(--muted); font-size: 12px; text-align: center; }
+.empty { padding: 40px; text-align: center; color: var(--ink-2); }
+@media (forced-colors: active) { .meter-track span, .cat .bar i, .alloc-bar div { forced-color-adjust: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>總經風險儀表板</h1>
+      <div class="meta" id="meta">載入中…</div>
+    </div>
+    <button class="theme-btn" id="themeBtn" type="button" aria-label="切換深淺色">◐ 深淺色</button>
+  </header>
+  <div id="banners"></div>
+  <main id="app"></main>
+  <footer>
+    資料來源：FRED®, Federal Reserve Bank of St. Louis。每週由 GitHub Actions 自動更新。<br>
+    本頁內容僅供研究參考，不構成任何投資建議。
+  </footer>
+</div>
+<div class="tip" id="tip" role="tooltip"></div>
+
+<script src="data/macro.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  // ---------- 主題切換（記住使用者偏好） ----------
+  const root = document.documentElement;
+  try { const t = localStorage.getItem("macro-theme"); if (t) root.dataset.theme = t; } catch (e) {}
+  document.getElementById("themeBtn").addEventListener("click", () => {
+    const dark = root.dataset.theme ? root.dataset.theme === "dark"
+      : matchMedia("(prefers-color-scheme: dark)").matches;
+    root.dataset.theme = dark ? "light" : "dark";
+    try { localStorage.setItem("macro-theme", root.dataset.theme); } catch (e) {}
+    renderHistory();
+  });
+
+  const D = window.MACRO_DATA;
+  const app = document.getElementById("app");
+  if (!D) {
+    document.getElementById("meta").textContent = "";
+    app.innerHTML = '<div class="card empty">找不到資料檔 data/macro.js。請先執行 <code>python3 macro/scripts/update_macro.py</code>。</div>';
+    return;
+  }
+
+  // ---------- 工具 ----------
+  const LEVEL_STYLE = {
+    "low":          { c: "var(--s-low)",    icon: "✓" },
+    "moderate-low": { c: "var(--s-modlow)", icon: "✓" },
+    "moderate":     { c: "var(--s-mod)",    icon: "!" },
+    "elevated":     { c: "var(--s-elev)",   icon: "!" },
+    "high":         { c: "var(--s-high)",   icon: "✕" },
+  };
+  const levelFor = s => {
+    let lo = 0;
+    for (const l of D.levels) { if (s < l.max || l.max === 100) return { ...l, min: lo }; lo = l.max; }
+  };
+  const bands = () => { let lo = 0; return D.levels.map(l => { const b = { ...l, min: lo }; lo = l.max; return b; }); };
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const fmt = (v, d) => v == null ? "—" : Number(v).toLocaleString("zh-TW", { minimumFractionDigits: d, maximumFractionDigits: d });
+  const signed = (v, d) => v == null ? "—" : (v > 0 ? "+" : v < 0 ? "−" : "±") + fmt(Math.abs(v), d);
+  const withUnit = (v, ind) => v == null ? "—" : fmt(v, ind.digits) + (ind.unit === "%" ? "%" : ind.unit ? " " + ind.unit : "");
+  const fmtDate = s => s ? s.replaceAll("-", "/") : "—";
+  // 分數上升 = 風險上升 = 壞
+  const riskDelta = (v, d = 1) => v == null ? "—"
+    : `<b class="${v > 0.4 ? "worse" : v < -0.4 ? "better" : ""}">${v > 0.4 ? "▲" : v < -0.4 ? "▼" : ""} ${signed(v, d)}</b>`;
+  const css = name => getComputedStyle(root).getPropertyValue(name).trim();
+
+  const tip = document.getElementById("tip");
+  function showTip(html, x, y) {
+    tip.innerHTML = html; tip.style.display = "block";
+    const w = tip.offsetWidth, h = tip.offsetHeight;
+    let left = x + 14, top = y - h - 10;
+    if (left + w > innerWidth - 8) left = x - w - 14;
+    if (top < 8) top = y + 16;
+    tip.style.left = Math.max(8, left) + "px"; tip.style.top = top + "px";
+  }
+  const hideTip = () => { tip.style.display = "none"; };
+
+  // ---------- 頁首 / 提示 ----------
+  const gen = new Date(D.generated_at);
+  document.getElementById("meta").innerHTML =
+    `資料日期 <b>${fmtDate(D.as_of)}</b> · 更新於 ${gen.toLocaleString("zh-TW", { hour12: false })}`;
+  const banners = [];
+  if (D.demo) banners.push('<div class="banner"><b>示範資料：</b>目前顯示的是隨機產生的範例數字，用來預覽版面。部署後 GitHub Actions 會在第一次執行時換成 FRED 真實數據。</div>');
+  const daysOld = (Date.now() - gen.getTime()) / 864e5;
+  if (!D.demo && daysOld > 10) banners.push(`<div class="banner err">資料已 ${Math.floor(daysOld)} 天未更新，請檢查 GitHub Actions 排程是否正常。</div>`);
+  const errs = Object.keys(D.errors || {});
+  if (errs.length) banners.push(`<div class="banner err">本次有 ${errs.length} 個序列抓取失敗（${esc(errs.join(", "))}），相關指標未納入評分。</div>`);
+  document.getElementById("banners").innerHTML = banners.join("");
+
+  // ---------- 綜合風險 ----------
+  const R = D.risk;
+  const lv = LEVEL_STYLE[R.level.key];
+  const catScore = c => c.score == null ? "—" : fmt(c.score, 0);
+  app.insertAdjacentHTML("beforeend", `
+  <section class="card" aria-labelledby="h-risk" style="margin-top:0">
+    <div class="hero">
+      <div>
+        <div class="hero-label" id="h-risk">綜合投資風險分數</div>
+        <div class="hero-num">${fmt(R.score, 0)}<small>/ 100</small></div>
+        <span class="level-chip"><span class="dot" style="background:${lv.c}" aria-hidden="true">${lv.icon}</span>${esc(R.level.name)}</span>
+        <div class="deltas">
+          <span>較上週 ${riskDelta(R.change_1w)}</span>
+          <span>較 4 週前 ${riskDelta(R.change_4w)}</span>
+        </div>
+        <div class="meter" role="img" aria-label="風險量尺，目前 ${fmt(R.score, 0)} 分">
+          <div class="meter-track">
+            ${bands().map(b => `<span style="background:${LEVEL_STYLE[b.key].c};flex:${b.max - b.min}" title="${esc(b.name)} ${b.min}–${b.max}"></span>`).join("")}
+            <div class="meter-pin" style="left:${Math.min(100, Math.max(0, R.score))}%"></div>
+          </div>
+          <div class="meter-scale">${[0, 20, 40, 60, 80, 100].map(v => `<span>${v}</span>`).join("")}</div>
+        </div>
+      </div>
+      <div>
+        <p class="posture">${esc(R.level.posture)}</p>
+        <ul class="summary">${R.summary.map(s => `<li>${esc(s)}</li>`).join("")}</ul>
+        <div class="cats">
+          ${R.categories.map(c => `
+            <div class="cat">
+              <div class="n">${esc(c.name)} · 權重 ${Math.round(c.weight * 100)}%</div>
+              <div class="v">${catScore(c)}${c.score == null ? "" : `<em>${esc(levelFor(c.score).name)}</em>`}</div>
+              <div class="bar"><i style="width:${c.score ?? 0}%;background:${c.score == null ? "transparent" : LEVEL_STYLE[levelFor(c.score).key].c}"></i></div>
+            </div>`).join("")}
+        </div>
+      </div>
+    </div>
+  </section>`);
+
+  // ---------- 歷史走勢 ----------
+  app.insertAdjacentHTML("beforeend", `
+  <section class="card" aria-labelledby="h-hist">
+    <div class="chart-head">
+      <div>
+        <h2 id="h-hist">綜合風險分數走勢</h2>
+        <p class="sub">每週五計算一次；背景色帶為風險等級區間。</p>
+      </div>
+      <div class="seg" role="group" aria-label="時間範圍">
+        <button type="button" data-y="1" aria-pressed="false">1 年</button>
+        <button type="button" data-y="3" aria-pressed="true">3 年</button>
+        <button type="button" data-y="5" aria-pressed="false">5 年</button>
+      </div>
+    </div>
+    <div id="history"></div>
+    <div class="legend">${bands().map(b => `<span><i style="background:${LEVEL_STYLE[b.key].c}"></i>${esc(b.name)}（${b.min}–${b.max}）</span>`).join("")}</div>
+  </section>`);
+
+  let years = 3;
+  document.querySelectorAll(".seg button").forEach(btn => btn.addEventListener("click", () => {
+    years = +btn.dataset.y;
+    document.querySelectorAll(".seg button").forEach(b => b.setAttribute("aria-pressed", b === btn));
+    renderHistory();
+  }));
+
+  function renderHistory() {
+    const el = document.getElementById("history");
+    const cut = new Date(D.as_of); cut.setFullYear(cut.getFullYear() - years);
+    const pts = D.history.filter(h => new Date(h.date) >= cut);
+    if (pts.length < 2) { el.innerHTML = '<div class="empty">歷史資料不足</div>'; return; }
+    const W = el.clientWidth || 800, H = W < 500 ? 220 : 280;
+    const m = { l: 34, r: 12, t: 10, b: 26 };
+    const iw = W - m.l - m.r, ih = H - m.t - m.b;
+    const t0 = +new Date(pts[0].date), t1 = +new Date(pts[pts.length - 1].date);
+    const x = d => m.l + (new Date(d) - t0) / (t1 - t0) * iw;
+    const y = v => m.t + (1 - v / 100) * ih;
+    let s = `<svg width="${W}" height="${H}" role="img" aria-label="綜合風險分數過去 ${years} 年走勢">`;
+    for (const b of bands())
+      s += `<rect x="${m.l}" y="${y(b.max)}" width="${iw}" height="${y(b.min) - y(b.max)}" fill="${LEVEL_STYLE[b.key].c}" fill-opacity="${css("--band-alpha")}"/>`;
+    for (const v of [0, 20, 40, 60, 80, 100]) {
+      s += `<line x1="${m.l}" x2="${W - m.r}" y1="${y(v)}" y2="${y(v)}" stroke="${v === 0 ? "var(--axis)" : "var(--grid)"}" stroke-width="1"/>`;
+      s += `<text class="axis-t" x="${m.l - 6}" y="${y(v) + 4}" text-anchor="end">${v}</text>`;
+    }
+    // x 軸：每季或每年刻度
+    const step = years <= 1 ? 3 : 12;
+    const start = new Date(pts[0].date);
+    let tick = new Date(start.getFullYear(), Math.ceil((start.getMonth() + 1) / step) * step % 12, 1);
+    if (tick < start) tick.setFullYear(tick.getFullYear() + (tick.getMonth() === 0 ? 0 : 1));
+    while (+tick <= t1) {
+      if (+tick >= t0) {
+        const tx = m.l + (tick - t0) / (t1 - t0) * iw;
+        const label = step === 12 ? `${tick.getFullYear()}` : `${tick.getFullYear()}/${tick.getMonth() + 1}`;
+        if (tx > m.l + 16 && tx < W - m.r - 16) s += `<text class="axis-t" x="${tx}" y="${H - 8}" text-anchor="middle">${label}</text>`;
+      }
+      tick.setMonth(tick.getMonth() + step);
+    }
+    const path = pts.map((p, i) => `${i ? "L" : "M"}${x(p.date).toFixed(1)},${y(p.score).toFixed(1)}`).join("");
+    s += `<path d="${path}" fill="none" stroke="var(--series)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+    const last = pts[pts.length - 1];
+    s += `<circle cx="${x(last.date)}" cy="${y(last.score)}" r="4.5" fill="var(--series)" stroke="var(--surface)" stroke-width="2"/>`;
+    s += `<g id="hx" style="display:none"><line y1="${m.t}" y2="${m.t + ih}" stroke="var(--ink-2)" stroke-width="1" stroke-dasharray="3 3"/><circle r="4.5" fill="var(--series)" stroke="var(--surface)" stroke-width="2"/></g>`;
+    s += `<rect x="${m.l}" y="${m.t}" width="${iw}" height="${ih}" fill="transparent" id="hhit"/></svg>`;
+    el.innerHTML = s;
+    const hx = el.querySelector("#hx");
+    const hit = el.querySelector("#hhit");
+    const cats = D.risk.categories;
+    const move = ev => {
+      const rect = el.querySelector("svg").getBoundingClientRect();
+      const px = ev.clientX - rect.left;
+      let best = pts[0], bd = Infinity;
+      for (const p of pts) { const dd = Math.abs(x(p.date) - px); if (dd < bd) { bd = dd; best = p; } }
+      const cx = x(best.date), cy = y(best.score);
+      hx.style.display = ""; hx.querySelector("line").setAttribute("x1", cx); hx.querySelector("line").setAttribute("x2", cx);
+      hx.querySelector("circle").setAttribute("cx", cx); hx.querySelector("circle").setAttribute("cy", cy);
+      const lvl = levelFor(best.score);
+      showTip(`<div class="d">${fmtDate(best.date)}</div><b>綜合 ${fmt(best.score, 1)}</b>（${esc(lvl.name)}）<br>` +
+        cats.map(c => `${esc(c.name)} ${fmt(best[c.key], 0)}`).join("<br>"), ev.clientX, ev.clientY);
+    };
+    hit.addEventListener("pointermove", move);
+    hit.addEventListener("pointerdown", move);
+    hit.addEventListener("pointerleave", () => { hx.style.display = "none"; hideTip(); });
+  }
+  renderHistory();
+  let rz; addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(renderHistory, 120); });
+
+  // ---------- 參考配置 + 市場參考 ----------
+  const allocColors = ["#2a78d6", "#1baf7a", "#898781", "#eda100"];
+  const alloc = Object.entries(R.level.allocation);
+  app.insertAdjacentHTML("beforeend", `
+  <section class="two">
+    <div class="card" aria-labelledby="h-alloc">
+      <h2 id="h-alloc">對應的參考資產配置</h2>
+      <p class="sub">依目前「${esc(R.level.name)}」等級的示意配置，請依個人風險承受度調整。</p>
+      <div class="alloc-bar" role="img" aria-label="${alloc.map(([k, v]) => `${k} ${v}%`).join("、")}">
+        ${alloc.map(([k, v], i) => `<div style="flex:${v};background:${allocColors[i]}" title="${esc(k)} ${v}%"></div>`).join("")}
+      </div>
+      <div class="alloc-list">${alloc.map(([k, v], i) => `<span><i style="background:${allocColors[i]}"></i>${esc(k)}<b>${v}%</b></span>`).join("")}</div>
+      <p class="disclaimer">此配置為依風險分數自動對應的教學範例，並非投資建議；實際決策請考量個人財務目標、期限與專業意見。</p>
+    </div>
+    <div class="card" aria-labelledby="h-ref">
+      <h2 id="h-ref">市場參考</h2>
+      <p class="sub">不納入評分，供判讀利率與匯率環境。</p>
+      <div class="ref-grid">
+        ${D.reference.map(i => `<div class="ref">
+          <div class="n">${esc(i.name)}</div>
+          <div class="v">${withUnit(i.value, i)}</div>
+          <div class="c">4 週 ${signed(i.change_4w, i.digits)} · ${fmtDate(i.date)}</div>
+          ${i.series ? sparkSVG(i, 150, 30) : ""}
+        </div>`).join("")}
+      </div>
+    </div>
+  </section>`);
+
+  // ---------- 指標明細 ----------
+  const catName = Object.fromEntries(R.categories.map(c => [c.key, c.name]));
+  app.insertAdjacentHTML("beforeend", `
+  <section class="card" aria-labelledby="h-ind">
+    <h2 id="h-ind">指標明細</h2>
+    <p class="sub">風險分數 0（最安全）～ 100（最危險）。點選列可查看說明與評分門檻；走勢圖為近 3 年。</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr>
+          <th>指標</th><th class="num">最新值</th><th class="num">4 週變化</th>
+          <th>近 3 年走勢</th><th class="num">風險分數</th><th class="num">分數 4 週變化</th>
+        </tr></thead>
+        <tbody>
+        ${R.categories.map(c => `<tr class="cat-row"><td colspan="6">${esc(c.name)}　類別分數 ${catScore(c)}</td></tr>` +
+          D.indicators.filter(i => i.category === c.key).map(i => {
+            if (!i.available) return `<tr><td><span class="ind-name">${esc(i.name)}</span><div class="ind-date">${esc(i.source)}</div></td><td colspan="5" class="ind-date">資料暫缺</td></tr>`;
+            const l = i.score == null ? null : levelFor(i.score);
+            return `<tr class="row" tabindex="0" aria-expanded="false" data-k="${i.key}">
+              <td><span class="ind-name">${esc(i.name)}</span><div class="ind-date">${fmtDate(i.date)} · ${esc(i.source)}</div></td>
+              <td class="num">${withUnit(i.value, i)}</td>
+              <td class="num">${signed(i.change_4w, i.digits)}</td>
+              <td>${sparkSVG(i, 140, 32)}</td>
+              <td class="num">${l ? `<span class="pill"><i style="background:${LEVEL_STYLE[l.key].c}"></i>${fmt(i.score, 0)}</span><div class="ind-date">${esc(l.name)}</div>` : '<span class="ind-date">資料過舊</span>'}</td>
+              <td class="num">${riskDelta(i.score_change_4w, 0)}</td>
+            </tr>
+            <tr class="detail" hidden data-for="${i.key}"><td colspan="6">
+              ${esc(i.note)} 權重 ${i.weight}。
+              <div class="thr">評分門檻：${i.thresholds.map(([v, sc]) => `<span>${withUnit(v, i)} → ${sc}</span>`).join("")}</div>
+            </td></tr>`;
+          }).join("")).join("")}
+        </tbody>
+      </table>
+    </div>
+  </section>`);
+
+  document.querySelectorAll("tr.row").forEach(tr => {
+    const toggle = () => {
+      const d = document.querySelector(`tr.detail[data-for="${tr.dataset.k}"]`);
+      d.hidden = !d.hidden; tr.setAttribute("aria-expanded", !d.hidden);
+    };
+    tr.addEventListener("click", ev => { if (!ev.target.closest(".spark")) toggle(); });
+    tr.addEventListener("keydown", ev => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); toggle(); } });
+  });
+
+  // 走勢小圖 hover
+  const byKey = Object.fromEntries([...D.indicators, ...D.reference].map(i => [i.key, i]));
+  document.querySelectorAll("svg.spark").forEach(svg => {
+    const ind = byKey[svg.dataset.k], s = ind.series;
+    const dot = svg.querySelector(".sd");
+    const move = ev => {
+      const rect = svg.getBoundingClientRect();
+      const idx = Math.round((ev.clientX - rect.left) / rect.width * (s.length - 1));
+      const p = s[Math.max(0, Math.min(s.length - 1, idx))];
+      const [cx, cy] = svg._xy(Math.max(0, Math.min(s.length - 1, idx)));
+      dot.setAttribute("cx", cx); dot.setAttribute("cy", cy); dot.style.display = "";
+      showTip(`<div class="d">${fmtDate(p[0])}</div><b>${withUnit(p[1], ind)}</b>`, ev.clientX, ev.clientY);
+    };
+    svg.addEventListener("pointermove", move);
+    svg.addEventListener("pointerleave", () => { dot.style.display = "none"; hideTip(); });
+  });
+
+  // ---------- 方法說明 ----------
+  app.insertAdjacentHTML("beforeend", `
+  <section class="card method" aria-labelledby="h-m">
+    <h2 id="h-m">評分方法</h2>
+    <h3>計算方式</h3>
+    <ul>
+      <li>每個指標依歷史經驗設定門檻，以分段線性方式轉換成 0–100 的風險分數。</li>
+      <li>同類別指標按權重平均得到類別分數；四大類別再加權（景氣 30%、就業 20%、通膨與政策 20%、金融市場 30%）得到綜合分數。</li>
+      <li>等級：0–20 低、20–40 中低、40–60 中度、60–80 偏高、80–100 高。</li>
+    </ul>
+    <h3>更新頻率</h3>
+    <ul>
+      <li>GitHub Actions 每週六自動從 FRED 抓取最新數據並重新計算；月資料與季資料在公布後才會反映。</li>
+      <li>歷史走勢使用目前版本的修正後數據回算，與當時即時看到的數字可能略有差異。</li>
+    </ul>
+    <h3>限制</h3>
+    <ul>
+      <li>此模型著重美國總經與金融狀況，不含估值、企業獲利與地緣政治等因素。</li>
+      <li>總經指標常領先或落後市場數月，分數適合作為風險控管的參考框架，而非進出場時點訊號。</li>
+    </ul>
+  </section>`);
+
+  // ---------- 小走勢圖 ----------
+  function sparkSVG(ind, w, h) {
+    const s = ind.series;
+    if (!s || s.length < 2) return "";
+    const vals = s.map(p => p[1]);
+    let lo = Math.min(...vals), hi = Math.max(...vals);
+    if (hi === lo) { hi += 1; lo -= 1; }
+    const pad = 3;
+    const X = i => pad + i / (s.length - 1) * (w - pad * 2);
+    const Y = v => pad + (1 - (v - lo) / (hi - lo)) * (h - pad * 2);
+    const zero = lo < 0 && hi > 0 ? `<line x1="${pad}" x2="${w - pad}" y1="${Y(0)}" y2="${Y(0)}" stroke="var(--axis)" stroke-dasharray="2 2"/>` : "";
+    const d = s.map((p, i) => `${i ? "L" : "M"}${X(i).toFixed(1)},${Y(p[1]).toFixed(1)}`).join("");
+    const id = "sp-" + ind.key;
+    queueMicrotask(() => { const el = document.getElementById(id); if (el) el._xy = i => [X(i), Y(s[i][1])]; });
+    return `<svg class="spark" id="${id}" data-k="${ind.key}" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" role="img" aria-label="${esc(ind.name)}近 3 年走勢">
+      ${zero}<path d="${d}" fill="none" stroke="var(--series)" stroke-width="1.5" stroke-linejoin="round"/>
+      <circle cx="${X(s.length - 1)}" cy="${Y(vals[vals.length - 1])}" r="2.5" fill="var(--series)"/>
+      <circle class="sd" r="3.5" fill="var(--series)" stroke="var(--surface)" stroke-width="1.5" style="display:none"/>
+      <rect width="${w}" height="${h}" fill="transparent"/></svg>`;
+  }
+})();
+</script>
+</body>
+</html>
