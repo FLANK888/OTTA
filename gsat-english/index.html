@@ -945,7 +945,7 @@ footer { color: var(--graphite); font-size: 12px; padding-block: 20px 40px; bord
       ".item{border-bottom:1px solid #dcdfe3;padding:12px 0;break-inside:avoid}.no{color:#c2413a;font-weight:700;margin-right:6px}.sec{font-size:12px;color:#5d6470;border:1px solid #dcdfe3;border-radius:999px;padding:0 8px}" +
       ".q{font-family:Georgia,'Noto Serif TC',serif;font-size:16px;margin:6px 0}.opts{white-space:pre-wrap;font-family:Georgia,serif;color:#333}" +
       ".ans{display:grid;grid-template-columns:5em 1fr;gap:2px 8px;margin:6px 0;white-space:pre-wrap}.mine{color:#b3261e}.key{color:#227a4b;font-weight:600}.ex{background:#f3f4f1;padding:6px 10px;border-radius:4px;font-size:14px}.ex.ai{background:#fbeceb;margin-top:6px;white-space:pre-wrap}" +
-      ".was{text-decoration:line-through;color:#b3261e}.now{color:#227a4b;font-weight:600}.meta{color:#5d6470;font-size:13px}" +
+      ".rub{border-collapse:collapse;width:100%;margin:8px 0}.rub th,.rub td{border:1px solid #dcdfe3;padding:6px 10px;text-align:left;vertical-align:top}.rub th{background:#f3f4f1}.essay{border:1px solid #dcdfe3;border-radius:4px;padding:10px 14px;font-family:Georgia,'Noto Serif TC',serif;font-size:16px;line-height:1.8}.essay p{margin:0 0 .8em}.essay.revised{border-color:#227a4b}mark.err{background:#fbeceb;color:inherit;border-bottom:2px solid #b3261e}mark.err sup{color:#b3261e;font-size:10px}.was{text-decoration:line-through;color:#b3261e}.now{color:#227a4b;font-weight:600}.meta{color:#5d6470;font-size:13px}" +
       "</style></head><body><h1>學測英文錯題本</h1><p class=\"meta\">匯出時間 " + esc(new Date().toLocaleString("zh-TW")) + "</p>";
     groups.forEach(function (g) {
       h += "<h2>" + esc(g.exam.id) + "　" + esc(g.exam.title) + "</h2><p class=\"meta\">共 " + g.items.length + " 題需要複習</p>";
@@ -958,12 +958,24 @@ footer { color: var(--graphite); font-size: 12px; padding-block: 20px 40px; bord
         if (it.ai) h += '<div class="ex ai">' + esc(it.ai) + "</div>";
         h += "</div>";
       });
-      if (g.ai && g.ai.corrections.length) {
-        h += "<h3>英文作文 AI 訂正（AI 評分 " + fmt(aiTotal(g.ai)) + " / 20）</h3>";
-        g.ai.corrections.forEach(function (f, i) {
-          h += '<div class="item"><span class="no">' + (i + 1) + '</span><span class="sec">' + esc(f.type) + '</span><div class="q"><span class="was">' + esc(f.original) + '</span> → <span class="now">' + esc(f.corrected) + '</span></div><div class="ex">' + esc(f.note) + "</div></div>";
-        });
-        if (g.ai.revised) h += "<h3>訂正後全文</h3>" + g.ai.revised.split(/\n\s*\n/).map(function (p) { return '<p class="q">' + esc(p) + "</p>"; }).join("");
+      if (g.ai) {
+        var a = g.ai;
+        h += "<h3>英文作文（AI 評分 " + fmt(aiTotal(a)) + " / 20）</h3>";
+        if (g.exam.writing && g.exam.writing.prompt) h += '<p class="meta">' + esc(g.exam.writing.prompt) + "</p>";
+        h += '<table class="rub"><tr><th>評分項目</th><th>得分</th><th>評語</th></tr>' + RUBRIC.map(function (r) {
+          return "<tr><td>" + r[1] + "</td><td>" + fmt(a.scores[r[0]]) + " / " + r[2] + "</td><td>" + esc(a.comments[r[0]] || "") + "</td></tr>";
+        }).join("") + "</table>";
+        if (a.overall) h += '<div class="ex"><b>總評　</b>' + esc(a.overall) + "</div>";
+        h += '<h3>你的作文（紅底為錯誤，數字對應下方訂正）</h3><div class="essay">' + markEssay(a.essay, a.corrections) + "</div>";
+        if (a.corrections.length) {
+          h += "<h3>訂正（" + a.corrections.length + " 處）</h3>";
+          a.corrections.forEach(function (f, i) {
+            h += '<div class="item"><span class="no">' + (i + 1) + '</span><span class="sec">' + esc(f.type) + '</span><div class="q"><span class="was">' + esc(f.original) + '</span> → <span class="now">' + esc(f.corrected) + '</span></div><div class="ex">' + esc(f.note) + "</div></div>";
+          });
+        } else {
+          h += '<p class="meta">AI 沒有找到需要訂正的錯誤。</p>';
+        }
+        if (a.revised) h += '<h3>訂正後全文</h3><div class="essay revised">' + a.revised.split(/\n\s*\n/).map(function (p) { return "<p>" + esc(p).replace(/\n/g, "<br>") + "</p>"; }).join("") + "</div>";
       }
     });
     return h + "</body></html>";
@@ -974,7 +986,11 @@ footer { color: var(--graphite); font-size: 12px; padding-block: 20px 40px; bord
     var rows = [["週次", "題號", "題型", "題目", "選項", "你的答案", "正確答案", "解析", "AI 批改"]];
     groups.forEach(function (g) {
       g.items.forEach(function (it) { rows.push([g.exam.id, it.n, it.sec, it.q, it.opts, it.mine, it.key, it.ex, it.ai || ""]); });
-      if (g.ai) g.ai.corrections.forEach(function (f, i) { rows.push([g.exam.id, "作文 " + (i + 1), "作文訂正・" + f.type, f.original, "", f.original, f.corrected, f.note, ""]); });
+      if (g.ai) {
+        var a = g.ai, prompt = (g.exam.writing && g.exam.writing.prompt) || "";
+        rows.push([g.exam.id, "作文", "作文評分", prompt, "", a.essay, a.revised, RUBRIC.map(function (r) { return r[1] + " " + fmt(a.scores[r[0]]) + "/" + r[2] + (a.comments[r[0]] ? "：" + a.comments[r[0]] : ""); }).join("\n") + (a.overall ? "\n總評：" + a.overall : ""), "AI 評分 " + fmt(aiTotal(a)) + "/20"]);
+        a.corrections.forEach(function (f, i) { rows.push([g.exam.id, "作文 " + (i + 1), "作文訂正・" + f.type, f.original, "", f.original, f.corrected, f.note, ""]); });
+      }
     });
     return "﻿" + rows.map(function (r) { return r.map(q).join(","); }).join("\r\n");
   }
@@ -1002,7 +1018,7 @@ footer { color: var(--graphite); font-size: 12px; padding-block: 20px 40px; bord
   function exportNotebook(kind) {
     setNb("整理中…");
     collect().then(function (groups) {
-      var count = groups.reduce(function (s, g) { return s + g.items.length + (g.ai ? g.ai.corrections.length : 0); }, 0);
+      var count = groups.reduce(function (s, g) { return s + g.items.length + (g.ai ? g.ai.corrections.length + 1 : 0); }, 0);
       if (!groups.length) return setNb("還沒有交卷的試卷。");
       if (!count) return setNb("沒有錯題，全部答對！");
       var stamp = nbScope === "this" ? exam.id : "all-" + new Date().toISOString().slice(0, 10);
@@ -1233,7 +1249,8 @@ footer { color: var(--graphite); font-size: 12px; padding-block: 20px 40px; bord
       }
       return adviceP.then(function (advice) {
         setNb("產生 PDF 中…");
-        return loadPdfLibs().then(function () { return renderPdf(reportBlocks(groups, tally, advice)); }).then(function (buf) {
+        var fontsReady = document.fonts && document.fonts.ready ? document.fonts.ready.catch(function () {}) : Promise.resolve();
+        return Promise.all([loadPdfLibs(), fontsReady]).then(function () { return renderPdf(reportBlocks(groups, tally, advice)); }).then(function (buf) {
           var stamp = nbScope === "this" ? exam.id : "all-" + new Date().toISOString().slice(0, 10);
           return saveFile("學測英文非選擇題強化報告-" + stamp + ".pdf", buf, "application/pdf");
         }).then(function (msg) {
