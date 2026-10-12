@@ -1117,7 +1117,9 @@ footer { color: var(--graphite); font-size: 12px; padding-block: 20px 40px; bord
     th: "border:1px solid #dcdfe3;padding:6px 10px;text-align:left;background:#f3f4f1;font-weight:700;"
   };
   function rMarked(text, fixes) {
-    return markEssay(text, fixes).replace(/<mark class="err">/g, '<mark style="background:#fbeceb;color:#1d2128;border-bottom:2px solid #b3261e;padding:0 1px">').replace(/<sup>/g, '<sup style="color:#b3261e;font-size:10px">').replace(/<p>/g, '<p style="' + R.en + 'margin:0 0 8px">');
+    // html2canvas paints an inline element's background as one rectangle over all the lines it spans,
+    // which hides the words underneath; mark errors with red underlined text instead.
+    return markEssay(text, fixes).replace(/<mark class="err">([\s\S]*?)<\/mark>/g, '<span style="color:#b3261e;text-decoration:underline">$1</span>').replace(/<sup>/g, '<sup style="color:#b3261e;font-size:10px;font-weight:700">').replace(/<p>/g, '<p style="' + R.en + 'margin:0 0 8px">');
   }
   function rFixes(fixes) {
     if (!fixes.length) return '<p style="margin:0;color:#227a4b">沒有需要訂正的錯誤。</p>';
@@ -1181,7 +1183,7 @@ footer { color: var(--graphite); font-size: 12px; padding-block: 20px 40px; bord
         });
         rub += "</div>" + (a.overall ? '<p style="' + R.note + '"><b>總評　</b>' + esc(a.overall) + "</p>" : "") + "</div>";
         blocks.push(rub);
-        blocks.push('<div><p style="' + R.lbl + '">你的作文（紅底為錯誤，數字對應下方訂正）</p><div style="' + R.box + '">' + rMarked(a.essay, a.corrections) + "</div></div>");
+        blocks.push('<div><p style="' + R.lbl + '">你的作文（紅字底線為錯誤，數字對應下方訂正）</p><div style="' + R.box + '">' + rMarked(a.essay, a.corrections) + "</div></div>");
         blocks.push('<div><p style="' + R.lbl + '">訂正（' + a.corrections.length + " 處）</p>" + rFixes(a.corrections) + "</div>");
         if (a.revised) blocks.push('<div><p style="' + R.lbl + '">訂正後全文</p><div style="' + R.box + 'border-color:#227a4b">' + a.revised.split(/\n\s*\n/).map(function (p) { return '<p style="' + R.en + 'margin:0 0 8px">' + esc(p) + "</p>"; }).join("") + "</div></div>");
       }
